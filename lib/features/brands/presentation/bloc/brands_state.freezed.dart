@@ -154,7 +154,16 @@ extension BrandsStatePatterns on BrandsState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Brand> brands)? loaded,
+    TResult Function(
+            List<Brand> brands,
+            List<Product> products,
+            Brand? selectedBrand,
+            String? selectedCategory,
+            int currentPage,
+            bool hasMore,
+            bool isLoadingProducts,
+            bool isLoadingMore)?
+        loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -165,7 +174,15 @@ extension BrandsStatePatterns on BrandsState {
       case _Loading() when loading != null:
         return loading();
       case _Loaded() when loaded != null:
-        return loaded(_that.brands);
+        return loaded(
+            _that.brands,
+            _that.products,
+            _that.selectedBrand,
+            _that.selectedCategory,
+            _that.currentPage,
+            _that.hasMore,
+            _that.isLoadingProducts,
+            _that.isLoadingMore);
       case _Error() when error != null:
         return error(_that.message);
       case _:
@@ -190,7 +207,16 @@ extension BrandsStatePatterns on BrandsState {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<Brand> brands) loaded,
+    required TResult Function(
+            List<Brand> brands,
+            List<Product> products,
+            Brand? selectedBrand,
+            String? selectedCategory,
+            int currentPage,
+            bool hasMore,
+            bool isLoadingProducts,
+            bool isLoadingMore)
+        loaded,
     required TResult Function(String message) error,
   }) {
     final _that = this;
@@ -200,7 +226,15 @@ extension BrandsStatePatterns on BrandsState {
       case _Loading():
         return loading();
       case _Loaded():
-        return loaded(_that.brands);
+        return loaded(
+            _that.brands,
+            _that.products,
+            _that.selectedBrand,
+            _that.selectedCategory,
+            _that.currentPage,
+            _that.hasMore,
+            _that.isLoadingProducts,
+            _that.isLoadingMore);
       case _Error():
         return error(_that.message);
     }
@@ -222,7 +256,16 @@ extension BrandsStatePatterns on BrandsState {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Brand> brands)? loaded,
+    TResult? Function(
+            List<Brand> brands,
+            List<Product> products,
+            Brand? selectedBrand,
+            String? selectedCategory,
+            int currentPage,
+            bool hasMore,
+            bool isLoadingProducts,
+            bool isLoadingMore)?
+        loaded,
     TResult? Function(String message)? error,
   }) {
     final _that = this;
@@ -232,7 +275,15 @@ extension BrandsStatePatterns on BrandsState {
       case _Loading() when loading != null:
         return loading();
       case _Loaded() when loaded != null:
-        return loaded(_that.brands);
+        return loaded(
+            _that.brands,
+            _that.products,
+            _that.selectedBrand,
+            _that.selectedCategory,
+            _that.currentPage,
+            _that.hasMore,
+            _that.isLoadingProducts,
+            _that.isLoadingMore);
       case _Error() when error != null:
         return error(_that.message);
       case _:
@@ -284,7 +335,17 @@ class _Loading implements BrandsState {
 /// @nodoc
 
 class _Loaded implements BrandsState {
-  const _Loaded(final List<Brand> brands) : _brands = brands;
+  const _Loaded(
+      {required final List<Brand> brands,
+      required final List<Product> products,
+      this.selectedBrand,
+      this.selectedCategory,
+      this.currentPage = 1,
+      this.hasMore = false,
+      this.isLoadingProducts = false,
+      this.isLoadingMore = false})
+      : _brands = brands,
+        _products = products;
 
   final List<Brand> _brands;
   List<Brand> get brands {
@@ -292,6 +353,24 @@ class _Loaded implements BrandsState {
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_brands);
   }
+
+  final List<Product> _products;
+  List<Product> get products {
+    if (_products is EqualUnmodifiableListView) return _products;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_products);
+  }
+
+  final Brand? selectedBrand;
+  final String? selectedCategory;
+  @JsonKey()
+  final int currentPage;
+  @JsonKey()
+  final bool hasMore;
+  @JsonKey()
+  final bool isLoadingProducts;
+  @JsonKey()
+  final bool isLoadingMore;
 
   /// Create a copy of BrandsState
   /// with the given fields replaced by the non-null parameter values.
@@ -305,16 +384,36 @@ class _Loaded implements BrandsState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _Loaded &&
-            const DeepCollectionEquality().equals(other._brands, _brands));
+            const DeepCollectionEquality().equals(other._brands, _brands) &&
+            const DeepCollectionEquality().equals(other._products, _products) &&
+            (identical(other.selectedBrand, selectedBrand) ||
+                other.selectedBrand == selectedBrand) &&
+            (identical(other.selectedCategory, selectedCategory) ||
+                other.selectedCategory == selectedCategory) &&
+            (identical(other.currentPage, currentPage) ||
+                other.currentPage == currentPage) &&
+            (identical(other.hasMore, hasMore) || other.hasMore == hasMore) &&
+            (identical(other.isLoadingProducts, isLoadingProducts) ||
+                other.isLoadingProducts == isLoadingProducts) &&
+            (identical(other.isLoadingMore, isLoadingMore) ||
+                other.isLoadingMore == isLoadingMore));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_brands));
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_brands),
+      const DeepCollectionEquality().hash(_products),
+      selectedBrand,
+      selectedCategory,
+      currentPage,
+      hasMore,
+      isLoadingProducts,
+      isLoadingMore);
 
   @override
   String toString() {
-    return 'BrandsState.loaded(brands: $brands)';
+    return 'BrandsState.loaded(brands: $brands, products: $products, selectedBrand: $selectedBrand, selectedCategory: $selectedCategory, currentPage: $currentPage, hasMore: $hasMore, isLoadingProducts: $isLoadingProducts, isLoadingMore: $isLoadingMore)';
   }
 }
 
@@ -324,7 +423,17 @@ abstract mixin class _$LoadedCopyWith<$Res>
   factory _$LoadedCopyWith(_Loaded value, $Res Function(_Loaded) _then) =
       __$LoadedCopyWithImpl;
   @useResult
-  $Res call({List<Brand> brands});
+  $Res call(
+      {List<Brand> brands,
+      List<Product> products,
+      Brand? selectedBrand,
+      String? selectedCategory,
+      int currentPage,
+      bool hasMore,
+      bool isLoadingProducts,
+      bool isLoadingMore});
+
+  $BrandCopyWith<$Res>? get selectedBrand;
 }
 
 /// @nodoc
@@ -339,13 +448,62 @@ class __$LoadedCopyWithImpl<$Res> implements _$LoadedCopyWith<$Res> {
   @pragma('vm:prefer-inline')
   $Res call({
     Object? brands = null,
+    Object? products = null,
+    Object? selectedBrand = freezed,
+    Object? selectedCategory = freezed,
+    Object? currentPage = null,
+    Object? hasMore = null,
+    Object? isLoadingProducts = null,
+    Object? isLoadingMore = null,
   }) {
     return _then(_Loaded(
-      null == brands
+      brands: null == brands
           ? _self._brands
           : brands // ignore: cast_nullable_to_non_nullable
               as List<Brand>,
+      products: null == products
+          ? _self._products
+          : products // ignore: cast_nullable_to_non_nullable
+              as List<Product>,
+      selectedBrand: freezed == selectedBrand
+          ? _self.selectedBrand
+          : selectedBrand // ignore: cast_nullable_to_non_nullable
+              as Brand?,
+      selectedCategory: freezed == selectedCategory
+          ? _self.selectedCategory
+          : selectedCategory // ignore: cast_nullable_to_non_nullable
+              as String?,
+      currentPage: null == currentPage
+          ? _self.currentPage
+          : currentPage // ignore: cast_nullable_to_non_nullable
+              as int,
+      hasMore: null == hasMore
+          ? _self.hasMore
+          : hasMore // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isLoadingProducts: null == isLoadingProducts
+          ? _self.isLoadingProducts
+          : isLoadingProducts // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isLoadingMore: null == isLoadingMore
+          ? _self.isLoadingMore
+          : isLoadingMore // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
+  }
+
+  /// Create a copy of BrandsState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $BrandCopyWith<$Res>? get selectedBrand {
+    if (_self.selectedBrand == null) {
+      return null;
+    }
+
+    return $BrandCopyWith<$Res>(_self.selectedBrand!, (value) {
+      return _then(_self.copyWith(selectedBrand: value));
+    });
   }
 }
 

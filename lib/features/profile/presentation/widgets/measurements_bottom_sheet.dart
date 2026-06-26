@@ -30,9 +30,6 @@ class _MeasurementsBottomSheetState extends State<MeasurementsBottomSheet> {
   late final TextEditingController _chestController;
   late final TextEditingController _waistController;
   late final TextEditingController _hipsController;
-  String? _selectedSize;
-
-  static const _sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
   @override
   void initState() {
@@ -43,10 +40,9 @@ class _MeasurementsBottomSheetState extends State<MeasurementsBottomSheet> {
     _chestController  = TextEditingController(text: _fmt(u.chestCm));
     _waistController  = TextEditingController(text: _fmt(u.waistCm));
     _hipsController   = TextEditingController(text: _fmt(u.hipsCm));
-    _selectedSize = u.clothingSize;
   }
 
-  String _fmt(double? v) => v != null ? v.toStringAsFixed(0) : '';
+  String _fmt(int? v) => v?.toString() ?? '';
 
   @override
   void dispose() {
@@ -60,12 +56,11 @@ class _MeasurementsBottomSheetState extends State<MeasurementsBottomSheet> {
 
   void _onSave() {
     sl<AuthBloc>().add(AuthEvent.updateMeasurementsRequested(
-      heightCm: double.tryParse(_heightController.text),
-      weightKg: double.tryParse(_weightController.text),
-      chestCm:  double.tryParse(_chestController.text),
-      waistCm:  double.tryParse(_waistController.text),
-      hipsCm:   double.tryParse(_hipsController.text),
-      clothingSize: _selectedSize,
+      heightCm: int.tryParse(_heightController.text),
+      weightKg: int.tryParse(_weightController.text),
+      chestCm:  int.tryParse(_chestController.text),
+      waistCm:  int.tryParse(_waistController.text),
+      hipsCm:   int.tryParse(_hipsController.text),
     ));
     Navigator.of(context).pop();
   }
@@ -147,51 +142,6 @@ class _MeasurementsBottomSheetState extends State<MeasurementsBottomSheet> {
                         ),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: AppSizes.space20),
-                  Text(
-                    'Beden',
-                    style: context.appTextTheme.labelMedium?.copyWith(
-                      color: context.colorScheme.onSurface,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: AppSizes.space8),
-                  Wrap(
-                    spacing: AppSizes.space8,
-                    runSpacing: AppSizes.space8,
-                    children: _sizes.map((size) {
-                      final isSelected = _selectedSize == size;
-                      return GestureDetector(
-                        onTap: () => setState(() => _selectedSize = size),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSizes.space16,
-                            vertical: AppSizes.space8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? context.colorScheme.primary
-                                : context.colorScheme.surfaceContainerLow,
-                            borderRadius: AppRadius.circular8,
-                            border: Border.all(
-                              color: isSelected
-                                  ? context.colorScheme.primary
-                                  : context.colorScheme.outlineVariant,
-                            ),
-                          ),
-                          child: Text(
-                            size,
-                            style: context.appTextTheme.labelMedium?.copyWith(
-                              color: isSelected
-                                  ? context.colorScheme.onPrimary
-                                  : context.colorScheme.onSurface,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
                   ),
                   const SizedBox(height: AppSizes.space32),
                   SizedBox(

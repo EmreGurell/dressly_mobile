@@ -7,6 +7,7 @@ import 'package:ai_try_on/features/feed/domain/entities/product.dart';
 
 class BrandDetailBloc extends Bloc<BrandDetailEvent, BrandDetailState> {
   final GetBrandProductsUseCase _getBrandProducts;
+  String? _search;
 
   BrandDetailBloc({required GetBrandProductsUseCase getBrandProducts})
       : _getBrandProducts = getBrandProducts,
@@ -16,13 +17,61 @@ class BrandDetailBloc extends Bloc<BrandDetailEvent, BrandDetailState> {
         load: (brand) => _onLoad(brand, emit),
         selectCategory: (category) => _onSelectCategory(category, emit),
         loadMore: () => _onLoadMore(emit),
+        search: (query) => _onSearch(query, emit),
       );
     });
   }
 
+  Future<void> _onSearch(String query, Emitter<BrandDetailState> emit) async {
+    _search = query.isEmpty ? null : query;
+    final current = state.maybeWhen(
+      loaded: (brand, products, categories, selectedCategory, page, hasMore, isLoadingMore) =>
+          (brand: brand, products: products, categories: categories, selectedCategory: selectedCategory),
+      orElse: () => null,
+    );
+    if (current == null) return;
+
+    emit(BrandDetailState.loaded(
+      brand: current.brand,
+      products: current.products,
+      categories: current.categories,
+      selectedCategory: current.selectedCategory,
+      currentPage: 1,
+      hasMore: false,
+      isLoadingMore: true,
+    ));
+
+    final result = await _getBrandProducts(
+      current.brand.id,
+      1,
+      category: current.selectedCategory,
+      search: _search,
+    );
+    result.fold(
+      (failure) => emit(BrandDetailState.loaded(
+        brand: current.brand,
+        products: current.products,
+        categories: current.categories,
+        selectedCategory: current.selectedCategory,
+        currentPage: 1,
+        hasMore: false,
+        isLoadingMore: false,
+      )),
+      (products) => emit(BrandDetailState.loaded(
+        brand: current.brand,
+        products: products,
+        categories: current.categories,
+        selectedCategory: current.selectedCategory,
+        currentPage: 1,
+        hasMore: products.length >= 20,
+      )),
+    );
+  }
+
   Future<void> _onLoad(Brand brand, Emitter<BrandDetailState> emit) async {
+    _search = null;
     emit(const BrandDetailState.loading());
-    final result = await _getBrandProducts(brand.id, 1);
+    final result = await _getBrandProducts(brand.id, 1, search: _search);
     result.fold(
       (failure) => emit(BrandDetailState.error(failure.message)),
       (products) {
@@ -45,19 +94,37 @@ class BrandDetailBloc extends Bloc<BrandDetailEvent, BrandDetailState> {
   ) async {
     final current = state.maybeWhen(
       loaded: (brand, products, categories, selectedCategory, page, hasMore, isLoadingMore) =>
-          (brand: brand, categories: categories),
+          (brand: brand, products: products, categories: categories),
       orElse: () => null,
     );
     if (current == null) return;
 
-    emit(const BrandDetailState.loading());
+    // Seçili kategoriyi hemen göster, mevcut ürünleri koru (full-screen loading yok)
+    emit(BrandDetailState.loaded(
+      brand: current.brand,
+      products: current.products,
+      categories: current.categories,
+      selectedCategory: category,
+      currentPage: 1,
+      hasMore: false,
+      isLoadingMore: true,
+    ));
+
     final result = await _getBrandProducts(
       current.brand.id,
       1,
       category: category,
+      search: _search,
     );
     result.fold(
-      (failure) => emit(BrandDetailState.error(failure.message)),
+      (failure) => emit(BrandDetailState.loaded(
+        brand: current.brand,
+        products: current.products,
+        categories: current.categories,
+        selectedCategory: category,
+        currentPage: 1,
+        hasMore: false,
+      )),
       (products) => emit(BrandDetailState.loaded(
         brand: current.brand,
         products: products,
@@ -100,6 +167,7 @@ class BrandDetailBloc extends Bloc<BrandDetailEvent, BrandDetailState> {
       current.brand.id,
       current.page + 1,
       category: current.selectedCategory,
+      search: _search,
     );
     result.fold(
       (failure) => emit(BrandDetailState.loaded(

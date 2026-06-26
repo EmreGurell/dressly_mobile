@@ -23,13 +23,16 @@ sealed class AuthEvent with _$AuthEvent {
 
   const factory AuthEvent.getMeRequested() = _GetMeRequested;
 
+  const factory AuthEvent.forgotPasswordRequested(String email) =
+      _ForgotPasswordRequested;
+
   const factory AuthEvent.updateMeasurementsRequested({
-    double? heightCm,
-    double? weightKg,
-    double? chestCm,
-    double? waistCm,
-    double? hipsCm,
-    String? clothingSize,
+    String? gender,
+    int? heightCm,
+    int? weightKg,
+    int? chestCm,
+    int? waistCm,
+    int? hipsCm,
   }) = _UpdateMeasurementsRequested;
 }
 

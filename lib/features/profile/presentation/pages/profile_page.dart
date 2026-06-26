@@ -37,8 +37,6 @@ class _ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<_ProfileView> {
-  bool _notificationsEnabled = true;
-
   @override
   void initState() {
     super.initState();
@@ -56,12 +54,8 @@ class _ProfileViewState extends State<_ProfileView> {
     return Scaffold(
       backgroundColor: cs.surfaceContainerLowest,
       appBar: AppBar(
-        title: Text(
-          'Profil',
-          style: context.appTextTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        backgroundColor: cs.surfaceContainerLowest,
+        title: Text('Profil', style: context.appTextTheme.headlineSmall),
       ),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -110,7 +104,6 @@ class _ProfileViewState extends State<_ProfileView> {
             ),
           ],
         ),
-        const SizedBox(height: AppSizes.space8),
         _SectionCard(
           children: [
             ProfileMenuItem(
@@ -119,18 +112,18 @@ class _ProfileViewState extends State<_ProfileView> {
               subtitle: 'Boy, kilo, beden',
               onTap: () => MeasurementsBottomSheet.show(context, user),
             ),
-            _Divider(),
             ProfileMenuItem(
-              icon: PhosphorIcons.bell(),
-              title: 'Bildirimler',
-              trailing: Switch(
-                value: _notificationsEnabled,
-                onChanged: (val) =>
-                    setState(() => _notificationsEnabled = val),
-                activeColor: AppColors.primary,
-              ),
+              icon: PhosphorIcons.tShirt(),
+              title: 'Deneme Geçmişi',
+              subtitle: 'AI try-on sonuçlarım',
+              onTap: () => context.push(AppRoutes.tryonHistory),
             ),
-            _Divider(),
+            ProfileMenuItem(
+              icon: PhosphorIcons.sparkle(),
+              title: 'Sana Özel',
+              subtitle: 'Kişisel öneriler',
+              onTap: () => context.push(AppRoutes.recommendations),
+            ),
             BlocBuilder<ThemeCubit, ThemeMode>(
               bloc: sl<ThemeCubit>(),
               builder: (context, themeMode) => ProfileMenuItem(
@@ -141,6 +134,14 @@ class _ProfileViewState extends State<_ProfileView> {
               ),
             ),
           ],
+        ),
+        const SizedBox(height: AppSizes.space8),
+        _Divider(),
+        const SizedBox(height: AppSizes.space8),
+        ProfileMenuItem(
+          icon: PhosphorIcons.bell(),
+          title: 'Bildirimler',
+          onTap: () => context.push(AppRoutes.notifications),
         ),
         const SizedBox(height: AppSizes.space8),
         _SectionCard(
@@ -222,7 +223,8 @@ class _ThemeSheet extends StatelessWidget {
                       color: cs.onSurface,
                     )),
                 trailing: isSelected
-                    ? PhosphorIcon(PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
+                    ? PhosphorIcon(
+                        PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
                         color: cs.primary)
                     : null,
                 onTap: () {
@@ -246,7 +248,7 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: context.colorScheme.surface,
+      color: context.colorScheme.surfaceContainerLowest,
       child: Column(children: children),
     );
   }
@@ -257,7 +259,9 @@ class _Divider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: AppPadding.horizontal16,
-      child: Divider(height: 1, color: context.colorScheme.outlineVariant),
+      child: Divider(
+          height: 1,
+          color: context.colorScheme.outlineVariant.withValues(alpha: .3)),
     );
   }
 }

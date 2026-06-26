@@ -10,6 +10,7 @@ sealed class BrandModel with _$BrandModel {
     required int id,
     required String name,
     @JsonKey(name: 'logo_url') required String logoUrl,
+    @JsonKey(name: 'website_url') @Default('') String websiteUrl,
     @JsonKey(name: 'product_count') @Default(0) int productCount,
   }) = _BrandModel;
 
@@ -22,6 +23,7 @@ extension BrandModelX on BrandModel {
         id: id,
         name: name,
         logoUrl: logoUrl,
+        websiteUrl: websiteUrl,
         productCount: productCount,
       );
 }

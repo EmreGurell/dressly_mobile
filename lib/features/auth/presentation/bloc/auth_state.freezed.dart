@@ -54,6 +54,7 @@ extension AuthStatePatterns on AuthState {
     TResult Function(_Loading value)? loading,
     TResult Function(_Authenticated value)? authenticated,
     TResult Function(_Unauthenticated value)? unauthenticated,
+    TResult Function(_ForgotPasswordSent value)? forgotPasswordSent,
     TResult Function(_Error value)? error,
     required TResult orElse(),
   }) {
@@ -67,6 +68,8 @@ extension AuthStatePatterns on AuthState {
         return authenticated(_that);
       case _Unauthenticated() when unauthenticated != null:
         return unauthenticated(_that);
+      case _ForgotPasswordSent() when forgotPasswordSent != null:
+        return forgotPasswordSent(_that);
       case _Error() when error != null:
         return error(_that);
       case _:
@@ -93,6 +96,7 @@ extension AuthStatePatterns on AuthState {
     required TResult Function(_Loading value) loading,
     required TResult Function(_Authenticated value) authenticated,
     required TResult Function(_Unauthenticated value) unauthenticated,
+    required TResult Function(_ForgotPasswordSent value) forgotPasswordSent,
     required TResult Function(_Error value) error,
   }) {
     final _that = this;
@@ -105,6 +109,8 @@ extension AuthStatePatterns on AuthState {
         return authenticated(_that);
       case _Unauthenticated():
         return unauthenticated(_that);
+      case _ForgotPasswordSent():
+        return forgotPasswordSent(_that);
       case _Error():
         return error(_that);
     }
@@ -128,6 +134,7 @@ extension AuthStatePatterns on AuthState {
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Authenticated value)? authenticated,
     TResult? Function(_Unauthenticated value)? unauthenticated,
+    TResult? Function(_ForgotPasswordSent value)? forgotPasswordSent,
     TResult? Function(_Error value)? error,
   }) {
     final _that = this;
@@ -140,6 +147,8 @@ extension AuthStatePatterns on AuthState {
         return authenticated(_that);
       case _Unauthenticated() when unauthenticated != null:
         return unauthenticated(_that);
+      case _ForgotPasswordSent() when forgotPasswordSent != null:
+        return forgotPasswordSent(_that);
       case _Error() when error != null:
         return error(_that);
       case _:
@@ -165,6 +174,7 @@ extension AuthStatePatterns on AuthState {
     TResult Function()? loading,
     TResult Function(User user)? authenticated,
     TResult Function()? unauthenticated,
+    TResult Function()? forgotPasswordSent,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -178,6 +188,8 @@ extension AuthStatePatterns on AuthState {
         return authenticated(_that.user);
       case _Unauthenticated() when unauthenticated != null:
         return unauthenticated();
+      case _ForgotPasswordSent() when forgotPasswordSent != null:
+        return forgotPasswordSent();
       case _Error() when error != null:
         return error(_that.message);
       case _:
@@ -204,6 +216,7 @@ extension AuthStatePatterns on AuthState {
     required TResult Function() loading,
     required TResult Function(User user) authenticated,
     required TResult Function() unauthenticated,
+    required TResult Function() forgotPasswordSent,
     required TResult Function(String message) error,
   }) {
     final _that = this;
@@ -216,6 +229,8 @@ extension AuthStatePatterns on AuthState {
         return authenticated(_that.user);
       case _Unauthenticated():
         return unauthenticated();
+      case _ForgotPasswordSent():
+        return forgotPasswordSent();
       case _Error():
         return error(_that.message);
     }
@@ -239,6 +254,7 @@ extension AuthStatePatterns on AuthState {
     TResult? Function()? loading,
     TResult? Function(User user)? authenticated,
     TResult? Function()? unauthenticated,
+    TResult? Function()? forgotPasswordSent,
     TResult? Function(String message)? error,
   }) {
     final _that = this;
@@ -251,6 +267,8 @@ extension AuthStatePatterns on AuthState {
         return authenticated(_that.user);
       case _Unauthenticated() when unauthenticated != null:
         return unauthenticated();
+      case _ForgotPasswordSent() when forgotPasswordSent != null:
+        return forgotPasswordSent();
       case _Error() when error != null:
         return error(_that.message);
       case _:
@@ -392,6 +410,26 @@ class _Unauthenticated implements AuthState {
   @override
   String toString() {
     return 'AuthState.unauthenticated()';
+  }
+}
+
+/// @nodoc
+
+class _ForgotPasswordSent implements AuthState {
+  const _ForgotPasswordSent();
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _ForgotPasswordSent);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  String toString() {
+    return 'AuthState.forgotPasswordSent()';
   }
 }
 

@@ -1,0 +1,10 @@
+﻿bricks:
+  feature_bloc:
+    path: ../mason_bricks/bloc/feature
+  usecase_bloc:
+    path: ../mason_bricks/bloc/usecase
+  page_bloc:
+    path: ../mason_bricks/bloc/page
+  model_bloc:
+    path: ../mason_bricks/bloc/model
+

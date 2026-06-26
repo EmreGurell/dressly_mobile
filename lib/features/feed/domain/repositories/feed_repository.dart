@@ -7,4 +7,5 @@ abstract class FeedRepository {
   Future<Either<Failure, void>> likeProduct(int productId);
   Future<Either<Failure, void>> saveProduct(int productId);
   Future<Either<Failure, void>> refreshFeed();
+  Future<Either<Failure, List<Product>>> getRecommendations();
 }

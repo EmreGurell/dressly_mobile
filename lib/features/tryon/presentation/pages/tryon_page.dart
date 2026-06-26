@@ -6,11 +6,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:ai_try_on/core/di/injection.dart';
 import 'package:ai_try_on/features/feed/domain/entities/product.dart';
+import 'package:ai_try_on/features/tryon/domain/entities/tryon.dart';
 import 'package:ai_try_on/features/tryon/presentation/bloc/tryon_bloc.dart';
 import 'package:ai_try_on/features/tryon/presentation/bloc/tryon_event.dart';
 import 'package:ai_try_on/features/tryon/presentation/bloc/tryon_state.dart';
-import 'package:ai_try_on/shared/theme/app_colors.dart';
-import 'package:ai_try_on/shared/theme/app_sizes.dart';
+import 'package:ai_try_on/shared/theme/theme.dart';
 import 'package:ai_try_on/shared/widgets/app_snackbar.dart';
 
 class TryOnPage extends StatelessWidget {
@@ -39,19 +39,21 @@ class _TryOnView extends StatelessWidget {
           error: (msg) => AppSnackbar.error(context, msg),
         );
       },
-      child: Scaffold(
-        backgroundColor: Colors.black,
+      child: Builder(builder: (context) {
+        final cs = context.colorScheme;
+        return Scaffold(
+        backgroundColor: cs.surface,
         appBar: AppBar(
-          backgroundColor: Colors.black,
-          foregroundColor: Colors.white,
-          title: const Text('AI Try-On', style: TextStyle(color: Colors.white)),
+          backgroundColor: cs.surface,
+          foregroundColor: cs.onSurface,
+          title: Text('AI Try-On', style: TextStyle(color: cs.onSurface)),
           actions: [
             BlocBuilder<TryonBloc, TryonState>(
               builder: (context, state) => state.maybeWhen(
                 initial: () => const SizedBox.shrink(),
                 photoSelected: (_) => TextButton(
                   onPressed: () => context.read<TryonBloc>().add(const TryonEvent.reset()),
-                  child: const Text('Sıfırla', style: TextStyle(color: AppColors.white)),
+                  child: Text('Sıfırla', style: TextStyle(color: cs.onSurface)),
                 ),
                 orElse: () => const SizedBox.shrink(),
               ),
@@ -62,19 +64,21 @@ class _TryOnView extends StatelessWidget {
           builder: (context, state) => state.when(
             initial: () => _TryOnBody(product: product, photo: null),
             photoSelected: (photo) => _TryOnBody(product: product, photo: photo),
-            loading: (_) => const _LoadingView(),
-            success: (result) => _ResultView(
-              resultImageUrl: result.resultImageUrl,
-              productId: result.productId,
+            loading: (_) => const _LoadingView(
+              label: 'Deneme başlatılıyor...',
+              sublabel: 'Lütfen bekleyin',
             ),
-            resultSaved: () => _ResultView(
-              resultImageUrl: '',
-              productId: product?.id ?? 0,
+            polling: (_, result) => _LoadingView(
+              label: _statusLabel(result.status),
+              sublabel: '~1-2 dakika sürebilir',
             ),
+            success: (result) => _ResultView(result: result),
+            resultSaved: () => const _SavedView(),
             error: (msg) => _TryOnBody(product: product, photo: null),
           ),
         ),
-      ),
+        );
+      }),
     );
   }
 }
@@ -96,7 +100,6 @@ class _TryOnBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Product image (top half)
         Expanded(
           child: Stack(
             fit: StackFit.expand,
@@ -119,9 +122,8 @@ class _TryOnBody extends StatelessWidget {
           ),
         ),
 
-        const Divider(height: 1, color: AppColors.grey700),
+        Divider(height: 1, color: context.colorScheme.outlineVariant),
 
-        // User photo area (bottom half)
         Expanded(
           child: photo == null
               ? _PhotoPickerPrompt(
@@ -147,37 +149,30 @@ class _PhotoPickerPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = context.colorScheme;
     return ColoredBox(
-      color: AppColors.grey900,
+      color: cs.surfaceContainerLow,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          PhosphorIcon(PhosphorIcons.user(), color: AppColors.grey500, size: 64),
+          PhosphorIcon(PhosphorIcons.user(), color: cs.onSurfaceVariant, size: 64),
           const SizedBox(height: AppSizes.space16),
-          const Text(
+          Text(
             'Fotoğrafını ekle',
-            style: TextStyle(color: AppColors.white, fontSize: 16, fontWeight: FontWeight.w600),
+            style: TextStyle(color: cs.onSurface, fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: AppSizes.space8),
-          const Text(
+          Text(
             'Kamerandan çek veya galerinden seç',
-            style: TextStyle(color: AppColors.grey400, fontSize: 13),
+            style: TextStyle(color: cs.onSurfaceVariant, fontSize: 13),
           ),
           const SizedBox(height: AppSizes.space24),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _PickButton(
-                icon: PhosphorIcons.camera(),
-                label: 'Kamera',
-                onTap: onCamera,
-              ),
+              _PickButton(icon: PhosphorIcons.camera(), label: 'Kamera', onTap: onCamera),
               const SizedBox(width: AppSizes.space16),
-              _PickButton(
-                icon: PhosphorIcons.image(),
-                label: 'Galeri',
-                onTap: onGallery,
-              ),
+              _PickButton(icon: PhosphorIcons.image(), label: 'Galeri', onTap: onGallery),
             ],
           ),
         ],
@@ -217,9 +212,9 @@ class _PhotoPreview extends StatelessWidget {
             children: [
               ElevatedButton.icon(
                 onPressed: product != null
-                    ? () => context
-                        .read<TryonBloc>()
-                        .add(TryonEvent.tryOnRequested(product!.id))
+                    ? () => context.read<TryonBloc>().add(
+                          TryonEvent.tryOnRequested(product!.id),
+                        )
                     : null,
                 icon: PhosphorIcon(PhosphorIcons.sparkle(PhosphorIconsStyle.fill)),
                 label: const Text('Dene!'),
@@ -254,20 +249,31 @@ class _PhotoPreview extends StatelessWidget {
   }
 }
 
+String _statusLabel(String status) => switch (status) {
+      'pending' => 'Sıraya alındı...',
+      'processing' => 'İşleniyor...',
+      _ => 'Hazırlanıyor...',
+    };
+
 class _LoadingView extends StatelessWidget {
-  const _LoadingView();
+  final String label;
+  final String sublabel;
+  const _LoadingView({required this.label, required this.sublabel});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    final cs = context.colorScheme;
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(color: AppColors.primary),
-          SizedBox(height: AppSizes.space16),
+          const CircularProgressIndicator(color: AppColors.primary),
+          const SizedBox(height: AppSizes.space16),
+          Text(label, style: TextStyle(color: cs.onSurface, fontSize: 14)),
+          const SizedBox(height: AppSizes.space8),
           Text(
-            'AI deneme kıyafet oluşturuyor...',
-            style: TextStyle(color: AppColors.white, fontSize: 14),
+            sublabel,
+            style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12),
           ),
         ],
       ),
@@ -276,20 +282,18 @@ class _LoadingView extends StatelessWidget {
 }
 
 class _ResultView extends StatelessWidget {
-  final String resultImageUrl;
-  final int productId;
-  const _ResultView({required this.resultImageUrl, required this.productId});
+  final TryonResult result;
+  const _ResultView({required this.result});
 
   @override
   Widget build(BuildContext context) {
-    if (resultImageUrl.isEmpty) return const SizedBox.shrink();
     return Stack(
       fit: StackFit.expand,
       children: [
         CachedNetworkImage(
-          imageUrl: resultImageUrl,
+          imageUrl: result.resultImageUrl ?? '',
           fit: BoxFit.cover,
-          placeholder: (_, __) => const ColoredBox(color: Colors.black),
+          placeholder: (_, __) => const ColoredBox(color: AppColors.grey900),
           errorWidget: (_, __, ___) => const ColoredBox(color: AppColors.grey900),
         ),
         const Positioned(
@@ -307,7 +311,7 @@ class _ResultView extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: () => context
                       .read<TryonBloc>()
-                      .add(TryonEvent.saveResult(resultImageUrl)),
+                      .add(const TryonEvent.saveResult()),
                   icon: PhosphorIcon(PhosphorIcons.downloadSimple()),
                   label: const Text('Kaydet'),
                   style: ElevatedButton.styleFrom(
@@ -335,6 +339,34 @@ class _ResultView extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _SavedView extends StatelessWidget {
+  const _SavedView();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = context.colorScheme;
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          PhosphorIcon(PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
+              color: Colors.green, size: 64),
+          const SizedBox(height: AppSizes.space16),
+          Text(
+            'Galeriye kaydedildi!',
+            style: TextStyle(color: cs.onSurface, fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: AppSizes.space24),
+          TextButton(
+            onPressed: () => context.read<TryonBloc>().add(const TryonEvent.reset()),
+            child: const Text('Tekrar Dene', style: TextStyle(color: AppColors.primary)),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -367,6 +399,7 @@ class _PickButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = context.colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -375,13 +408,13 @@ class _PickButton extends StatelessWidget {
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: AppColors.grey800,
+              color: cs.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: PhosphorIcon(icon, color: AppColors.white, size: 28),
+            child: PhosphorIcon(icon, color: cs.onSurface, size: 28),
           ),
           const SizedBox(height: AppSizes.space8),
-          Text(label, style: const TextStyle(color: AppColors.grey300, fontSize: 12)),
+          Text(label, style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12)),
         ],
       ),
     );

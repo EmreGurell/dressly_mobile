@@ -6,6 +6,7 @@ import 'package:ai_try_on/core/router/app_routes.dart';
 import 'package:ai_try_on/features/feed/presentation/bloc/feed_bloc.dart';
 import 'package:ai_try_on/features/feed/presentation/bloc/feed_event.dart';
 import 'package:ai_try_on/shared/theme/theme.dart';
+import 'package:ai_try_on/core/extensions/l10n_extension.dart';
 
 class MainShell extends StatelessWidget {
   final Widget child;
@@ -57,25 +58,25 @@ class MainShell extends StatelessWidget {
             icon: PhosphorIcon(PhosphorIcons.house()),
             activeIcon:
                 PhosphorIcon(PhosphorIcons.house(PhosphorIconsStyle.fill)),
-            label: 'Feed',
+            label: context.l10n.navFeed,
           ),BottomNavigationBarItem(
             icon: PhosphorIcon(PhosphorIcons.bookmarkSimple()),
             activeIcon:
                 PhosphorIcon(PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill)),
-            label: 'Saved',
+            label: context.l10n.navSaved,
           ),
           BottomNavigationBarItem(
             icon: PhosphorIcon(PhosphorIcons.storefront()),
             activeIcon:
                 PhosphorIcon(PhosphorIcons.storefront(PhosphorIconsStyle.fill)),
-            label: 'Brands',
+            label: context.l10n.navBrands,
           ),
-          
+
           BottomNavigationBarItem(
             icon: PhosphorIcon(PhosphorIcons.user()),
             activeIcon:
                 PhosphorIcon(PhosphorIcons.user(PhosphorIconsStyle.fill)),
-            label: 'Profile',
+            label: context.l10n.navProfile,
           ),
         ],
       ),

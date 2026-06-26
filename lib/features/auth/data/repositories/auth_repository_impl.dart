@@ -128,21 +128,21 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, User>> updateMeasurements({
-    double? heightCm,
-    double? weightKg,
-    double? chestCm,
-    double? waistCm,
-    double? hipsCm,
-    String? clothingSize,
+    String? gender,
+    int? heightCm,
+    int? weightKg,
+    int? chestCm,
+    int? waistCm,
+    int? hipsCm,
   }) async {
     try {
       final model = await _remote.updateMeasurements(
+        gender: gender,
         heightCm: heightCm,
         weightKg: weightKg,
         chestCm: chestCm,
         waistCm: waistCm,
         hipsCm: hipsCm,
-        clothingSize: clothingSize,
       );
       await _local.cacheUser(model);
       return Right(model.toEntity());

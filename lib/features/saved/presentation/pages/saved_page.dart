@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_try_on/shared/theme/theme.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -8,13 +7,10 @@ import 'package:ai_try_on/features/feed/domain/entities/product.dart';
 import 'package:ai_try_on/features/saved/presentation/bloc/saved_bloc.dart';
 import 'package:ai_try_on/features/saved/presentation/bloc/saved_event.dart';
 import 'package:ai_try_on/features/saved/presentation/bloc/saved_state.dart';
-import 'package:ai_try_on/shared/theme/app_colors.dart';
-import 'package:ai_try_on/shared/theme/app_padding.dart';
-import 'package:ai_try_on/shared/theme/app_radius.dart';
-import 'package:ai_try_on/shared/theme/app_sizes.dart';
 import 'package:ai_try_on/shared/widgets/app_empty_widget.dart';
 import 'package:ai_try_on/shared/widgets/app_error_widget.dart';
 import 'package:ai_try_on/shared/widgets/app_loading_widget.dart';
+import 'package:ai_try_on/shared/widgets/catalog_product_card.dart';
 
 class SavedPage extends StatelessWidget {
   const SavedPage({super.key});
@@ -33,34 +29,20 @@ class _SavedView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Saved'),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Wishlist'),
-              Tab(text: 'Outfit Ideas'),
-            ],
+    return Scaffold(
+      appBar: AppBar(
+        title:  Text('Wishlist',style: context.appTextTheme.headlineSmall),
+      ),
+      body: BlocBuilder<SavedBloc, SavedState>(
+        builder: (context, state) => state.when(
+          initial: () => const SizedBox.shrink(),
+          loading: () => const AppLoadingWidget(),
+          error: (msg) => AppErrorWidget(
+            message: msg,
+            onRetry: () =>
+                context.read<SavedBloc>().add(const SavedEvent.fetchSaved()),
           ),
-        ),
-        body: BlocBuilder<SavedBloc, SavedState>(
-          builder: (context, state) => state.when(
-            initial: () => const SizedBox.shrink(),
-            loading: () => const AppLoadingWidget(),
-            error: (msg) => AppErrorWidget(
-              message: msg,
-              onRetry: () =>
-                  context.read<SavedBloc>().add(const SavedEvent.fetchSaved()),
-            ),
-            loaded: (products) => TabBarView(
-              children: [
-                _WishlistTab(products: products),
-                _OutfitIdeasTab(products: products),
-              ],
-            ),
-          ),
+          loaded: (products) => _WishlistTab(products: products),
         ),
       ),
     );
@@ -81,7 +63,7 @@ class _WishlistTab extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: AppSizes.space12,
         mainAxisSpacing: AppSizes.space12,
-        childAspectRatio: 0.72,
+        mainAxisExtent: 320,
       ),
       itemCount: products.length,
       itemBuilder: (context, index) =>
@@ -90,26 +72,7 @@ class _WishlistTab extends StatelessWidget {
   }
 }
 
-class _OutfitIdeasTab extends StatelessWidget {
-  final List<Product> products;
-  const _OutfitIdeasTab({required this.products});
-
-  @override
-  Widget build(BuildContext context) {
-    if (products.isEmpty) return const AppEmptyWidget();
-
-    return ListView.separated(
-      padding: AppPadding.p16,
-      itemCount: products.length,
-      separatorBuilder: (_, __) =>
-          const SizedBox(height: AppSizes.space12),
-      itemBuilder: (context, index) =>
-          _SavedProductListTile(product: products[index]),
-    );
-  }
-}
-
-// Task 41 — Swipe to delete
+// Swipe to delete
 class _SavedProductCard extends StatelessWidget {
   final Product product;
   const _SavedProductCard({required this.product});
@@ -136,156 +99,8 @@ class _SavedProductCard extends StatelessWidget {
       onDismissed: (_) => context
           .read<SavedBloc>()
           .add(SavedEvent.removeProduct(product.id)),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: AppRadius.circular12,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.black.withOpacity(0.06),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: AppRadius.top12,
-                child: CachedNetworkImage(
-                  imageUrl: product.imageUrl,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  placeholder: (_, __) => Container(color: AppColors.grey100),
-                  errorWidget: (_, __, ___) => Container(
-                    color: AppColors.grey100,
-                    child: PhosphorIcon(PhosphorIcons.imageBroken(),
-                        color: AppColors.grey400),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: AppPadding.p8,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    product.name,
-                    style: context.appTextTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: AppSizes.space4),
-                  Text(
-                    '\$${product.price.toStringAsFixed(2)}',
-                    style: context.appTextTheme.bodySmall?.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      child: CatalogProductCard(product: product),
     );
   }
 }
 
-class _SavedProductListTile extends StatelessWidget {
-  final Product product;
-  const _SavedProductListTile({required this.product});
-
-  @override
-  Widget build(BuildContext context) {
-    return Dismissible(
-      key: ValueKey('outfit_${product.id}'),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: AppPadding.horizontal16,
-        decoration: BoxDecoration(
-          color: AppColors.error,
-          borderRadius: AppRadius.circular12,
-        ),
-        child: PhosphorIcon(PhosphorIcons.trash(), color: AppColors.white),
-      ),
-      onDismissed: (_) => context
-          .read<SavedBloc>()
-          .add(SavedEvent.removeProduct(product.id)),
-      child: Container(
-        height: 100,
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: AppRadius.circular12,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.black.withOpacity(0.06),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                bottomLeft: Radius.circular(12),
-              ),
-              child: CachedNetworkImage(
-                imageUrl: product.imageUrl,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-                placeholder: (_, __) => Container(color: AppColors.grey100),
-                errorWidget: (_, __, ___) =>
-                    Container(color: AppColors.grey100),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: AppPadding.p12,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      product.brandName,
-                      style: context.appTextTheme.bodySmall?.copyWith(
-                            color: AppColors.grey500,
-                          ),
-                    ),
-                    const SizedBox(height: AppSizes.space4),
-                    Text(
-                      product.name,
-                      style: context.appTextTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: AppSizes.space4),
-                    Text(
-                      '\$${product.price.toStringAsFixed(2)}',
-                      style: context.appTextTheme.bodySmall?.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

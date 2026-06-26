@@ -53,6 +53,7 @@ extension TryonStatePatterns on TryonState {
     TResult Function(_Initial value)? initial,
     TResult Function(_PhotoSelected value)? photoSelected,
     TResult Function(_Loading value)? loading,
+    TResult Function(_Polling value)? polling,
     TResult Function(_Success value)? success,
     TResult Function(_ResultSaved value)? resultSaved,
     TResult Function(_Error value)? error,
@@ -66,6 +67,8 @@ extension TryonStatePatterns on TryonState {
         return photoSelected(_that);
       case _Loading() when loading != null:
         return loading(_that);
+      case _Polling() when polling != null:
+        return polling(_that);
       case _Success() when success != null:
         return success(_that);
       case _ResultSaved() when resultSaved != null:
@@ -95,6 +98,7 @@ extension TryonStatePatterns on TryonState {
     required TResult Function(_Initial value) initial,
     required TResult Function(_PhotoSelected value) photoSelected,
     required TResult Function(_Loading value) loading,
+    required TResult Function(_Polling value) polling,
     required TResult Function(_Success value) success,
     required TResult Function(_ResultSaved value) resultSaved,
     required TResult Function(_Error value) error,
@@ -107,6 +111,8 @@ extension TryonStatePatterns on TryonState {
         return photoSelected(_that);
       case _Loading():
         return loading(_that);
+      case _Polling():
+        return polling(_that);
       case _Success():
         return success(_that);
       case _ResultSaved():
@@ -133,6 +139,7 @@ extension TryonStatePatterns on TryonState {
     TResult? Function(_Initial value)? initial,
     TResult? Function(_PhotoSelected value)? photoSelected,
     TResult? Function(_Loading value)? loading,
+    TResult? Function(_Polling value)? polling,
     TResult? Function(_Success value)? success,
     TResult? Function(_ResultSaved value)? resultSaved,
     TResult? Function(_Error value)? error,
@@ -145,6 +152,8 @@ extension TryonStatePatterns on TryonState {
         return photoSelected(_that);
       case _Loading() when loading != null:
         return loading(_that);
+      case _Polling() when polling != null:
+        return polling(_that);
       case _Success() when success != null:
         return success(_that);
       case _ResultSaved() when resultSaved != null:
@@ -173,6 +182,7 @@ extension TryonStatePatterns on TryonState {
     TResult Function()? initial,
     TResult Function(XFile photo)? photoSelected,
     TResult Function(XFile photo)? loading,
+    TResult Function(XFile photo, TryonResult result)? polling,
     TResult Function(TryonResult result)? success,
     TResult Function()? resultSaved,
     TResult Function(String message)? error,
@@ -186,6 +196,8 @@ extension TryonStatePatterns on TryonState {
         return photoSelected(_that.photo);
       case _Loading() when loading != null:
         return loading(_that.photo);
+      case _Polling() when polling != null:
+        return polling(_that.photo, _that.result);
       case _Success() when success != null:
         return success(_that.result);
       case _ResultSaved() when resultSaved != null:
@@ -215,6 +227,7 @@ extension TryonStatePatterns on TryonState {
     required TResult Function() initial,
     required TResult Function(XFile photo) photoSelected,
     required TResult Function(XFile photo) loading,
+    required TResult Function(XFile photo, TryonResult result) polling,
     required TResult Function(TryonResult result) success,
     required TResult Function() resultSaved,
     required TResult Function(String message) error,
@@ -227,6 +240,8 @@ extension TryonStatePatterns on TryonState {
         return photoSelected(_that.photo);
       case _Loading():
         return loading(_that.photo);
+      case _Polling():
+        return polling(_that.photo, _that.result);
       case _Success():
         return success(_that.result);
       case _ResultSaved():
@@ -253,6 +268,7 @@ extension TryonStatePatterns on TryonState {
     TResult? Function()? initial,
     TResult? Function(XFile photo)? photoSelected,
     TResult? Function(XFile photo)? loading,
+    TResult? Function(XFile photo, TryonResult result)? polling,
     TResult? Function(TryonResult result)? success,
     TResult? Function()? resultSaved,
     TResult? Function(String message)? error,
@@ -265,6 +281,8 @@ extension TryonStatePatterns on TryonState {
         return photoSelected(_that.photo);
       case _Loading() when loading != null:
         return loading(_that.photo);
+      case _Polling() when polling != null:
+        return polling(_that.photo, _that.result);
       case _Success() when success != null:
         return success(_that.result);
       case _ResultSaved() when resultSaved != null:
@@ -420,6 +438,87 @@ class __$LoadingCopyWithImpl<$Res> implements _$LoadingCopyWith<$Res> {
           : photo // ignore: cast_nullable_to_non_nullable
               as XFile,
     ));
+  }
+}
+
+/// @nodoc
+
+class _Polling implements TryonState {
+  const _Polling(this.photo, this.result);
+
+  final XFile photo;
+  final TryonResult result;
+
+  /// Create a copy of TryonState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$PollingCopyWith<_Polling> get copyWith =>
+      __$PollingCopyWithImpl<_Polling>(this, _$identity);
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _Polling &&
+            (identical(other.photo, photo) || other.photo == photo) &&
+            (identical(other.result, result) || other.result == result));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, photo, result);
+
+  @override
+  String toString() {
+    return 'TryonState.polling(photo: $photo, result: $result)';
+  }
+}
+
+/// @nodoc
+abstract mixin class _$PollingCopyWith<$Res>
+    implements $TryonStateCopyWith<$Res> {
+  factory _$PollingCopyWith(_Polling value, $Res Function(_Polling) _then) =
+      __$PollingCopyWithImpl;
+  @useResult
+  $Res call({XFile photo, TryonResult result});
+
+  $TryonResultCopyWith<$Res> get result;
+}
+
+/// @nodoc
+class __$PollingCopyWithImpl<$Res> implements _$PollingCopyWith<$Res> {
+  __$PollingCopyWithImpl(this._self, this._then);
+
+  final _Polling _self;
+  final $Res Function(_Polling) _then;
+
+  /// Create a copy of TryonState
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? photo = null,
+    Object? result = null,
+  }) {
+    return _then(_Polling(
+      null == photo
+          ? _self.photo
+          : photo // ignore: cast_nullable_to_non_nullable
+              as XFile,
+      null == result
+          ? _self.result
+          : result // ignore: cast_nullable_to_non_nullable
+              as TryonResult,
+    ));
+  }
+
+  /// Create a copy of TryonState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $TryonResultCopyWith<$Res> get result {
+    return $TryonResultCopyWith<$Res>(_self.result, (value) {
+      return _then(_self.copyWith(result: value));
+    });
   }
 }
 

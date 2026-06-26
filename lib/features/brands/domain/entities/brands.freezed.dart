@@ -17,6 +17,7 @@ mixin _$Brand {
   int get id;
   String get name;
   String get logoUrl;
+  String get websiteUrl;
   int get productCount;
 
   /// Create a copy of Brand
@@ -34,16 +35,19 @@ mixin _$Brand {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl) &&
+            (identical(other.websiteUrl, websiteUrl) ||
+                other.websiteUrl == websiteUrl) &&
             (identical(other.productCount, productCount) ||
                 other.productCount == productCount));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, logoUrl, productCount);
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, logoUrl, websiteUrl, productCount);
 
   @override
   String toString() {
-    return 'Brand(id: $id, name: $name, logoUrl: $logoUrl, productCount: $productCount)';
+    return 'Brand(id: $id, name: $name, logoUrl: $logoUrl, websiteUrl: $websiteUrl, productCount: $productCount)';
   }
 }
 
@@ -52,7 +56,12 @@ abstract mixin class $BrandCopyWith<$Res> {
   factory $BrandCopyWith(Brand value, $Res Function(Brand) _then) =
       _$BrandCopyWithImpl;
   @useResult
-  $Res call({int id, String name, String logoUrl, int productCount});
+  $Res call(
+      {int id,
+      String name,
+      String logoUrl,
+      String websiteUrl,
+      int productCount});
 }
 
 /// @nodoc
@@ -70,6 +79,7 @@ class _$BrandCopyWithImpl<$Res> implements $BrandCopyWith<$Res> {
     Object? id = null,
     Object? name = null,
     Object? logoUrl = null,
+    Object? websiteUrl = null,
     Object? productCount = null,
   }) {
     return _then(_self.copyWith(
@@ -84,6 +94,10 @@ class _$BrandCopyWithImpl<$Res> implements $BrandCopyWith<$Res> {
       logoUrl: null == logoUrl
           ? _self.logoUrl
           : logoUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      websiteUrl: null == websiteUrl
+          ? _self.websiteUrl
+          : websiteUrl // ignore: cast_nullable_to_non_nullable
               as String,
       productCount: null == productCount
           ? _self.productCount
@@ -184,15 +198,16 @@ extension BrandPatterns on Brand {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(int id, String name, String logoUrl, int productCount)?
+    TResult Function(int id, String name, String logoUrl, String websiteUrl,
+            int productCount)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _Brand() when $default != null:
-        return $default(
-            _that.id, _that.name, _that.logoUrl, _that.productCount);
+        return $default(_that.id, _that.name, _that.logoUrl, _that.websiteUrl,
+            _that.productCount);
       case _:
         return orElse();
     }
@@ -213,14 +228,15 @@ extension BrandPatterns on Brand {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(int id, String name, String logoUrl, int productCount)
+    TResult Function(int id, String name, String logoUrl, String websiteUrl,
+            int productCount)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _Brand():
-        return $default(
-            _that.id, _that.name, _that.logoUrl, _that.productCount);
+        return $default(_that.id, _that.name, _that.logoUrl, _that.websiteUrl,
+            _that.productCount);
     }
   }
 
@@ -238,14 +254,15 @@ extension BrandPatterns on Brand {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(int id, String name, String logoUrl, int productCount)?
+    TResult? Function(int id, String name, String logoUrl, String websiteUrl,
+            int productCount)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _Brand() when $default != null:
-        return $default(
-            _that.id, _that.name, _that.logoUrl, _that.productCount);
+        return $default(_that.id, _that.name, _that.logoUrl, _that.websiteUrl,
+            _that.productCount);
       case _:
         return null;
     }
@@ -259,6 +276,7 @@ class _Brand implements Brand {
       {required this.id,
       required this.name,
       required this.logoUrl,
+      this.websiteUrl = '',
       this.productCount = 0});
 
   @override
@@ -267,6 +285,9 @@ class _Brand implements Brand {
   final String name;
   @override
   final String logoUrl;
+  @override
+  @JsonKey()
+  final String websiteUrl;
   @override
   @JsonKey()
   final int productCount;
@@ -287,16 +308,19 @@ class _Brand implements Brand {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl) &&
+            (identical(other.websiteUrl, websiteUrl) ||
+                other.websiteUrl == websiteUrl) &&
             (identical(other.productCount, productCount) ||
                 other.productCount == productCount));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, logoUrl, productCount);
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, logoUrl, websiteUrl, productCount);
 
   @override
   String toString() {
-    return 'Brand(id: $id, name: $name, logoUrl: $logoUrl, productCount: $productCount)';
+    return 'Brand(id: $id, name: $name, logoUrl: $logoUrl, websiteUrl: $websiteUrl, productCount: $productCount)';
   }
 }
 
@@ -306,7 +330,12 @@ abstract mixin class _$BrandCopyWith<$Res> implements $BrandCopyWith<$Res> {
       __$BrandCopyWithImpl;
   @override
   @useResult
-  $Res call({int id, String name, String logoUrl, int productCount});
+  $Res call(
+      {int id,
+      String name,
+      String logoUrl,
+      String websiteUrl,
+      int productCount});
 }
 
 /// @nodoc
@@ -324,6 +353,7 @@ class __$BrandCopyWithImpl<$Res> implements _$BrandCopyWith<$Res> {
     Object? id = null,
     Object? name = null,
     Object? logoUrl = null,
+    Object? websiteUrl = null,
     Object? productCount = null,
   }) {
     return _then(_Brand(
@@ -338,6 +368,10 @@ class __$BrandCopyWithImpl<$Res> implements _$BrandCopyWith<$Res> {
       logoUrl: null == logoUrl
           ? _self.logoUrl
           : logoUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      websiteUrl: null == websiteUrl
+          ? _self.websiteUrl
+          : websiteUrl // ignore: cast_nullable_to_non_nullable
               as String,
       productCount: null == productCount
           ? _self.productCount

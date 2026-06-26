@@ -23,13 +23,25 @@ import 'package:ai_try_on/features/brands/domain/usecases/brands_usecases.dart';
 import 'package:ai_try_on/features/brands/presentation/bloc/brand_detail_bloc.dart';
 import 'package:ai_try_on/features/brands/presentation/bloc/brands_bloc.dart';
 import 'package:ai_try_on/features/feed/presentation/bloc/feed_bloc.dart';
+import 'package:ai_try_on/features/tryon/data/datasources/remote/tryon_django_datasource.dart';
 import 'package:ai_try_on/features/tryon/data/datasources/remote/tryon_remote_datasource.dart';
 import 'package:ai_try_on/features/tryon/data/repositories/tryon_repository_impl.dart';
 import 'package:ai_try_on/features/tryon/domain/repositories/tryon_repository.dart';
 import 'package:ai_try_on/features/tryon/domain/usecases/tryon_usecases.dart';
 import 'package:ai_try_on/features/tryon/presentation/bloc/tryon_bloc.dart';
+import 'package:ai_try_on/features/product_detail/data/datasources/remote/product_detail_remote_datasource.dart';
+import 'package:ai_try_on/features/product_detail/data/repositories/product_detail_repository_impl.dart';
+import 'package:ai_try_on/features/product_detail/domain/repositories/product_detail_repository.dart';
+import 'package:ai_try_on/features/product_detail/domain/usecases/get_product_detail_usecase.dart';
+import 'package:ai_try_on/features/product_detail/presentation/bloc/product_detail_bloc.dart';
+import 'package:ai_try_on/features/notifications/data/datasources/remote/notification_remote_datasource.dart';
+import 'package:ai_try_on/features/notifications/data/repositories/notification_repository_impl.dart';
+import 'package:ai_try_on/features/notifications/domain/repositories/notification_repository.dart';
+import 'package:ai_try_on/features/notifications/domain/usecases/notification_usecases.dart';
+import 'package:ai_try_on/features/notifications/presentation/bloc/notification_bloc.dart';
 import 'package:ai_try_on/shared/cubit/theme_cubit.dart';
 import 'package:ai_try_on/shared/services/auth_service.dart';
+import 'package:ai_try_on/shared/services/push_notification_service.dart';
 import 'package:ai_try_on/shared/services/secure_storage_service.dart';
 import 'package:ai_try_on/shared/services/storage_service.dart';
 
@@ -54,6 +66,9 @@ Future<void> configureDependencies() async {
   // Auth Service
   sl.registerLazySingleton<AuthService>(() => AuthService(sl(), sl()));
 
+  // Push Notifications
+  sl.registerLazySingleton<PushNotificationService>(() => PushNotificationService());
+
   // Auth Feature
   _registerAuth();
 
@@ -68,6 +83,12 @@ Future<void> configureDependencies() async {
 
   // TryOn Feature
   _registerTryOn();
+
+  // Product Detail Feature
+  _registerProductDetail();
+
+  // Notifications Feature
+  _registerNotifications();
 }
 
 void _registerAuth() {
@@ -92,6 +113,7 @@ void _registerAuth() {
   sl.registerFactory(() => LogoutUseCase(sl()));
   sl.registerFactory(() => GetMeUseCase(sl()));
   sl.registerFactory(() => UpdateMeasurementsUseCase(sl()));
+  sl.registerFactory(() => ForgotPasswordUseCase(sl()));
 
   // Bloc
   sl.registerLazySingleton(
@@ -103,6 +125,7 @@ void _registerAuth() {
       logoutUseCase: sl(),
       getMeUseCase: sl(),
       updateMeasurementsUseCase: sl(),
+      forgotPasswordUseCase: sl(),
     ),
   );
 }
@@ -129,9 +152,10 @@ void _registerBrands() {
     () => BrandsRepositoryImpl(sl()),
   );
   sl.registerFactory(() => GetBrandsUseCase(sl()));
+  sl.registerFactory(() => GetProductsUseCase(sl()));
   sl.registerFactory(() => GetBrandProductsUseCase(sl()));
   sl.registerFactory(
-    () => BrandsBloc(getBrands: sl()),
+    () => BrandsBloc(getBrands: sl(), getProducts: sl(), getBrandProducts: sl()),
   );
   sl.registerFactory(
     () => BrandDetailBloc(getBrandProducts: sl()),
@@ -140,13 +164,57 @@ void _registerBrands() {
 
 void _registerTryOn() {
   sl.registerLazySingleton<TryonRemoteDataSource>(
-    () => TryonRemoteDataSourceImpl(sl()),
+    () => DjangoTryonDataSourceImpl(sl()),
   );
   sl.registerLazySingleton<TryonRepository>(
     () => TryonRepositoryImpl(sl()),
   );
-  sl.registerFactory(() => TryOnUseCase(sl()));
-  sl.registerFactory(() => TryonBloc(tryOn: sl()));
+  sl.registerFactory(() => CreateTryOnUseCase(sl()));
+  sl.registerFactory(() => GetTryOnStatusUseCase(sl()));
+  sl.registerFactory(() => ListTryOnsUseCase(sl()));
+  sl.registerFactory(
+    () => TryonBloc(createTryOn: sl(), getTryOnStatus: sl()),
+  );
+}
+
+void _registerProductDetail() {
+  sl.registerLazySingleton<ProductDetailRemoteDataSource>(
+    () => ProductDetailRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<ProductDetailRepository>(
+    () => ProductDetailRepositoryImpl(sl()),
+  );
+  sl.registerFactory(() => GetProductDetailUseCase(sl()));
+  sl.registerFactory(
+    () => ProductDetailBloc(
+      getProductDetail: sl(),
+      likeProduct: sl(),
+      saveProduct: sl(),
+    ),
+  );
+}
+
+void _registerNotifications() {
+  sl.registerLazySingleton<NotificationRemoteDataSource>(
+    () => NotificationRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(sl()),
+  );
+  sl.registerFactory(() => ListNotificationsUseCase(sl()));
+  sl.registerFactory(() => GetUnreadCountUseCase(sl()));
+  sl.registerFactory(() => MarkReadUseCase(sl()));
+  sl.registerFactory(() => MarkAllReadUseCase(sl()));
+  sl.registerFactory(() => RegisterDeviceTokenUseCase(sl()));
+  sl.registerFactory(() => RemoveDeviceTokenUseCase(sl()));
+  sl.registerLazySingleton(
+    () => NotificationBloc(
+      listNotifications: sl(),
+      getUnreadCount: sl(),
+      markRead: sl(),
+      markAllRead: sl(),
+    ),
+  );
 }
 
 void _registerFeed() {
@@ -160,6 +228,7 @@ void _registerFeed() {
   sl.registerFactory(() => LikeProductUseCase(sl()));
   sl.registerFactory(() => SaveProductUseCase(sl()));
   sl.registerFactory(() => RefreshFeedUseCase(sl()));
+  sl.registerFactory(() => GetRecommendationsUseCase(sl()));
   sl.registerLazySingleton(
     () => FeedBloc(
       getFeed: sl(),

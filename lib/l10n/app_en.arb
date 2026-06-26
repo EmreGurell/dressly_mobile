@@ -1,0 +1,244 @@
+{
+  "@@locale": "en",
+
+  "appName": "Dressly",
+  "@appName": { "description": "Application name" },
+
+  "loading": "Loading...",
+  "@loading": { "description": "Generic loading text" },
+
+  "retry": "Retry",
+  "@retry": { "description": "Retry button" },
+
+  "errorOccurred": "Something went wrong",
+  "@errorOccurred": { "description": "Generic error message" },
+
+  "noContent": "Nothing here yet",
+  "@noContent": { "description": "Empty state message" },
+
+  "cancel": "Cancel",
+  "@cancel": { "description": "Cancel button" },
+
+  "save": "Save",
+  "@save": { "description": "Save button" },
+
+  "ok": "OK",
+  "@ok": { "description": "OK button" },
+
+  "confirm": "Confirm",
+  "@confirm": { "description": "Confirm button" },
+
+  "remove": "Remove",
+  "@remove": { "description": "Remove/dismiss action" },
+
+  "searchProducts": "Search products...",
+  "@searchProducts": { "description": "Search bar hint" },
+
+  "allCategories": "All",
+  "@allCategories": { "description": "All categories chip label" },
+
+  "productCount": "{count} items",
+  "@productCount": {
+    "description": "Product count in brand banner",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "priceTl": "{price} TL",
+  "@priceTl": {
+    "description": "Price with TL suffix",
+    "placeholders": {
+      "price": { "type": "String" }
+    }
+  },
+
+  "navFeed": "Feed",
+  "@navFeed": { "description": "Bottom nav - Feed tab" },
+
+  "navBrands": "Brands",
+  "@navBrands": { "description": "Bottom nav - Brands tab" },
+
+  "navSaved": "Saved",
+  "@navSaved": { "description": "Bottom nav - Saved tab" },
+
+  "navProfile": "Profile",
+  "@navProfile": { "description": "Bottom nav - Profile tab" },
+
+  "loginTitle": "Sign In",
+  "@loginTitle": { "description": "Login page heading" },
+
+  "loginSubtitle": "Enter your details\nto access your account.",
+  "@loginSubtitle": { "description": "Login page subtitle" },
+
+  "loginWithGoogle": "Sign in with Google",
+  "@loginWithGoogle": { "description": "Google login button" },
+
+  "loginWithApple": "Sign in with Apple",
+  "@loginWithApple": { "description": "Apple login button" },
+
+  "loginWithEmail": "Sign in with email",
+  "@loginWithEmail": { "description": "Email login link" },
+
+  "email": "Email",
+  "@email": { "description": "Email field label" },
+
+  "password": "Password",
+  "@password": { "description": "Password field label" },
+
+  "emailRequired": "Email is required",
+  "@emailRequired": { "description": "Email validation error" },
+
+  "passwordRequired": "Password is required",
+  "@passwordRequired": { "description": "Password validation error" },
+
+  "forgotPassword": "Forgot my password",
+  "@forgotPassword": { "description": "Forgot password link" },
+
+  "noAccount": "Don't have an account? ",
+  "@noAccount": { "description": "No account prompt" },
+
+  "registerTitle": "Create Account",
+  "@registerTitle": { "description": "Register page heading" },
+
+  "registerSubtitle": "Enter your details\nto join the fashion world.",
+  "@registerSubtitle": { "description": "Register page subtitle" },
+
+  "fullName": "Full Name",
+  "@fullName": { "description": "Full name field label" },
+
+  "nameRequired": "Name is required",
+  "@nameRequired": { "description": "Name validation error" },
+
+  "passwordMinLength": "At least 6 characters required",
+  "@passwordMinLength": { "description": "Password min length validation" },
+
+  "alreadyHaveAccount": "Already have an account? ",
+  "@alreadyHaveAccount": { "description": "Already have account prompt" },
+
+  "register": "Sign Up",
+  "@register": { "description": "Register button" },
+
+  "brandsTitle": "Brands",
+  "@brandsTitle": { "description": "Brands page title" },
+
+  "allProductsTitle": "All Products",
+  "@allProductsTitle": { "description": "All products page title" },
+
+  "allBrandsBanner": "All",
+  "@allBrandsBanner": { "description": "All brands banner label" },
+
+  "tryOn": "Try On",
+  "@tryOn": { "description": "Try on button" },
+
+  "buyNow": "Buy",
+  "@buyNow": { "description": "Buy now / shopping bag button tooltip" },
+
+  "tryOnTitle": "AI Try-On",
+  "@tryOnTitle": { "description": "Try-on page title" },
+
+  "tryOnReset": "Reset",
+  "@tryOnReset": { "description": "Reset button in try-on" },
+
+  "tryOnStarting": "Starting AI try-on...",
+  "@tryOnStarting": { "description": "Try-on starting state" },
+
+  "tryOnProcessing": "Processing outfit with AI...",
+  "@tryOnProcessing": { "description": "Try-on processing state" },
+
+  "tryOnQueued": "Queued, waiting...",
+  "@tryOnQueued": { "description": "Try-on queued state" },
+
+  "tryOnSaved": "Saved to your gallery!",
+  "@tryOnSaved": { "description": "Try-on save success snackbar" },
+
+  "tryOnAddPhoto": "Add your photo",
+  "@tryOnAddPhoto": { "description": "Try-on photo instruction title" },
+
+  "tryOnAddPhotoSubtitle": "Take a photo or choose from gallery",
+  "@tryOnAddPhotoSubtitle": { "description": "Try-on photo instruction subtitle" },
+
+  "tryOnProduct": "Product",
+  "@tryOnProduct": { "description": "Product label in try-on" },
+
+  "tryOnYourPhoto": "Your Photo",
+  "@tryOnYourPhoto": { "description": "Your photo label in try-on" },
+
+  "tryOnResult": "Result",
+  "@tryOnResult": { "description": "Result label in try-on" },
+
+  "tryOnTryButton": "Try!",
+  "@tryOnTryButton": { "description": "Try button in try-on" },
+
+  "camera": "Camera",
+  "@camera": { "description": "Camera option" },
+
+  "gallery": "Gallery",
+  "@gallery": { "description": "Gallery option" },
+
+  "savedTitle": "Wishlist",
+  "@savedTitle": { "description": "Saved page title" },
+
+  "profileTitle": "Profile",
+  "@profileTitle": { "description": "Profile page title" },
+
+  "profileLoadError": "Failed to load profile",
+  "@profileLoadError": { "description": "Profile load error message" },
+
+  "profileDefaultName": "User",
+  "@profileDefaultName": { "description": "Default user name placeholder" },
+
+  "subscription": "Subscription",
+  "@subscription": { "description": "Subscription menu item" },
+
+  "manageSubscription": "Manage your plan",
+  "@manageSubscription": { "description": "Subscription menu subtitle" },
+
+  "measurements": "My Measurements",
+  "@measurements": { "description": "Measurements menu item" },
+
+  "measurementsSubtitle": "Height, weight, size",
+  "@measurementsSubtitle": { "description": "Measurements menu subtitle" },
+
+  "measurementsTitle": "My Measurements",
+  "@measurementsTitle": { "description": "Measurements bottom sheet title" },
+
+  "measurementsDescription": "Enter your measurements for better results.",
+  "@measurementsDescription": { "description": "Measurements bottom sheet subtitle" },
+
+  "height": "Height",
+  "@height": { "description": "Height field label" },
+
+  "weight": "Weight",
+  "@weight": { "description": "Weight field label" },
+
+  "chest": "Chest",
+  "@chest": { "description": "Chest field label" },
+
+  "waist": "Waist",
+  "@waist": { "description": "Waist field label" },
+
+  "hips": "Hips",
+  "@hips": { "description": "Hips field label" },
+
+  "size": "Size",
+  "@size": { "description": "Size field label" },
+
+  "notifications": "Notifications",
+  "@notifications": { "description": "Notifications menu item" },
+
+  "theme": "Theme",
+  "@theme": { "description": "Theme menu item and sheet title" },
+
+  "themeLight": "Light",
+  "@themeLight": { "description": "Light theme option" },
+
+  "themeDark": "Dark",
+  "@themeDark": { "description": "Dark theme option" },
+
+  "themeSystem": "System",
+  "@themeSystem": { "description": "System theme option" },
+
+  "logout": "Log Out",
+  "@logout": { "description": "Logout menu item" }
+}

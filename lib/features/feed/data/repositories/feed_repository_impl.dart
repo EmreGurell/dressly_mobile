@@ -56,4 +56,14 @@ class FeedRepositoryImpl implements FeedRepository {
       return Left(_mapError(e).toFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, List<Product>>> getRecommendations() async {
+    try {
+      final models = await _remote.getRecommendations();
+      return Right(models.map((m) => m.toEntity()).toList());
+    } catch (e) {
+      return Left(_mapError(e).toFailure());
+    }
+  }
 }

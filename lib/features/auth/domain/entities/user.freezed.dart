@@ -18,12 +18,13 @@ mixin _$User {
   String get email;
   String? get name;
   String? get avatar;
-  double? get heightCm;
-  double? get weightKg;
-  double? get chestCm;
-  double? get waistCm;
-  double? get hipsCm;
-  String? get clothingSize;
+  String? get gender;
+  bool get isOnboarded;
+  int? get heightCm;
+  int? get weightKg;
+  int? get chestCm;
+  int? get waistCm;
+  int? get hipsCm;
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.
@@ -41,24 +42,25 @@ mixin _$User {
             (identical(other.email, email) || other.email == email) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.avatar, avatar) || other.avatar == avatar) &&
+            (identical(other.gender, gender) || other.gender == gender) &&
+            (identical(other.isOnboarded, isOnboarded) ||
+                other.isOnboarded == isOnboarded) &&
             (identical(other.heightCm, heightCm) ||
                 other.heightCm == heightCm) &&
             (identical(other.weightKg, weightKg) ||
                 other.weightKg == weightKg) &&
             (identical(other.chestCm, chestCm) || other.chestCm == chestCm) &&
             (identical(other.waistCm, waistCm) || other.waistCm == waistCm) &&
-            (identical(other.hipsCm, hipsCm) || other.hipsCm == hipsCm) &&
-            (identical(other.clothingSize, clothingSize) ||
-                other.clothingSize == clothingSize));
+            (identical(other.hipsCm, hipsCm) || other.hipsCm == hipsCm));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, email, name, avatar,
-      heightCm, weightKg, chestCm, waistCm, hipsCm, clothingSize);
+  int get hashCode => Object.hash(runtimeType, id, email, name, avatar, gender,
+      isOnboarded, heightCm, weightKg, chestCm, waistCm, hipsCm);
 
   @override
   String toString() {
-    return 'User(id: $id, email: $email, name: $name, avatar: $avatar, heightCm: $heightCm, weightKg: $weightKg, chestCm: $chestCm, waistCm: $waistCm, hipsCm: $hipsCm, clothingSize: $clothingSize)';
+    return 'User(id: $id, email: $email, name: $name, avatar: $avatar, gender: $gender, isOnboarded: $isOnboarded, heightCm: $heightCm, weightKg: $weightKg, chestCm: $chestCm, waistCm: $waistCm, hipsCm: $hipsCm)';
   }
 }
 
@@ -72,12 +74,13 @@ abstract mixin class $UserCopyWith<$Res> {
       String email,
       String? name,
       String? avatar,
-      double? heightCm,
-      double? weightKg,
-      double? chestCm,
-      double? waistCm,
-      double? hipsCm,
-      String? clothingSize});
+      String? gender,
+      bool isOnboarded,
+      int? heightCm,
+      int? weightKg,
+      int? chestCm,
+      int? waistCm,
+      int? hipsCm});
 }
 
 /// @nodoc
@@ -96,12 +99,13 @@ class _$UserCopyWithImpl<$Res> implements $UserCopyWith<$Res> {
     Object? email = null,
     Object? name = freezed,
     Object? avatar = freezed,
+    Object? gender = freezed,
+    Object? isOnboarded = null,
     Object? heightCm = freezed,
     Object? weightKg = freezed,
     Object? chestCm = freezed,
     Object? waistCm = freezed,
     Object? hipsCm = freezed,
-    Object? clothingSize = freezed,
   }) {
     return _then(_self.copyWith(
       id: null == id
@@ -120,30 +124,34 @@ class _$UserCopyWithImpl<$Res> implements $UserCopyWith<$Res> {
           ? _self.avatar
           : avatar // ignore: cast_nullable_to_non_nullable
               as String?,
+      gender: freezed == gender
+          ? _self.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isOnboarded: null == isOnboarded
+          ? _self.isOnboarded
+          : isOnboarded // ignore: cast_nullable_to_non_nullable
+              as bool,
       heightCm: freezed == heightCm
           ? _self.heightCm
           : heightCm // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       weightKg: freezed == weightKg
           ? _self.weightKg
           : weightKg // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       chestCm: freezed == chestCm
           ? _self.chestCm
           : chestCm // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       waistCm: freezed == waistCm
           ? _self.waistCm
           : waistCm // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       hipsCm: freezed == hipsCm
           ? _self.hipsCm
           : hipsCm // ignore: cast_nullable_to_non_nullable
-              as double?,
-      clothingSize: freezed == clothingSize
-          ? _self.clothingSize
-          : clothingSize // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as int?,
     ));
   }
 }
@@ -244,12 +252,13 @@ extension UserPatterns on User {
             String email,
             String? name,
             String? avatar,
-            double? heightCm,
-            double? weightKg,
-            double? chestCm,
-            double? waistCm,
-            double? hipsCm,
-            String? clothingSize)?
+            String? gender,
+            bool isOnboarded,
+            int? heightCm,
+            int? weightKg,
+            int? chestCm,
+            int? waistCm,
+            int? hipsCm)?
         $default, {
     required TResult orElse(),
   }) {
@@ -261,12 +270,13 @@ extension UserPatterns on User {
             _that.email,
             _that.name,
             _that.avatar,
+            _that.gender,
+            _that.isOnboarded,
             _that.heightCm,
             _that.weightKg,
             _that.chestCm,
             _that.waistCm,
-            _that.hipsCm,
-            _that.clothingSize);
+            _that.hipsCm);
       case _:
         return orElse();
     }
@@ -292,12 +302,13 @@ extension UserPatterns on User {
             String email,
             String? name,
             String? avatar,
-            double? heightCm,
-            double? weightKg,
-            double? chestCm,
-            double? waistCm,
-            double? hipsCm,
-            String? clothingSize)
+            String? gender,
+            bool isOnboarded,
+            int? heightCm,
+            int? weightKg,
+            int? chestCm,
+            int? waistCm,
+            int? hipsCm)
         $default,
   ) {
     final _that = this;
@@ -308,12 +319,13 @@ extension UserPatterns on User {
             _that.email,
             _that.name,
             _that.avatar,
+            _that.gender,
+            _that.isOnboarded,
             _that.heightCm,
             _that.weightKg,
             _that.chestCm,
             _that.waistCm,
-            _that.hipsCm,
-            _that.clothingSize);
+            _that.hipsCm);
     }
   }
 
@@ -336,12 +348,13 @@ extension UserPatterns on User {
             String email,
             String? name,
             String? avatar,
-            double? heightCm,
-            double? weightKg,
-            double? chestCm,
-            double? waistCm,
-            double? hipsCm,
-            String? clothingSize)?
+            String? gender,
+            bool isOnboarded,
+            int? heightCm,
+            int? weightKg,
+            int? chestCm,
+            int? waistCm,
+            int? hipsCm)?
         $default,
   ) {
     final _that = this;
@@ -352,12 +365,13 @@ extension UserPatterns on User {
             _that.email,
             _that.name,
             _that.avatar,
+            _that.gender,
+            _that.isOnboarded,
             _that.heightCm,
             _that.weightKg,
             _that.chestCm,
             _that.waistCm,
-            _that.hipsCm,
-            _that.clothingSize);
+            _that.hipsCm);
       case _:
         return null;
     }
@@ -372,12 +386,13 @@ class _User implements User {
       required this.email,
       this.name,
       this.avatar,
+      this.gender,
+      this.isOnboarded = false,
       this.heightCm,
       this.weightKg,
       this.chestCm,
       this.waistCm,
-      this.hipsCm,
-      this.clothingSize});
+      this.hipsCm});
 
   @override
   final String id;
@@ -388,17 +403,20 @@ class _User implements User {
   @override
   final String? avatar;
   @override
-  final double? heightCm;
+  final String? gender;
   @override
-  final double? weightKg;
+  @JsonKey()
+  final bool isOnboarded;
   @override
-  final double? chestCm;
+  final int? heightCm;
   @override
-  final double? waistCm;
+  final int? weightKg;
   @override
-  final double? hipsCm;
+  final int? chestCm;
   @override
-  final String? clothingSize;
+  final int? waistCm;
+  @override
+  final int? hipsCm;
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.
@@ -417,24 +435,25 @@ class _User implements User {
             (identical(other.email, email) || other.email == email) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.avatar, avatar) || other.avatar == avatar) &&
+            (identical(other.gender, gender) || other.gender == gender) &&
+            (identical(other.isOnboarded, isOnboarded) ||
+                other.isOnboarded == isOnboarded) &&
             (identical(other.heightCm, heightCm) ||
                 other.heightCm == heightCm) &&
             (identical(other.weightKg, weightKg) ||
                 other.weightKg == weightKg) &&
             (identical(other.chestCm, chestCm) || other.chestCm == chestCm) &&
             (identical(other.waistCm, waistCm) || other.waistCm == waistCm) &&
-            (identical(other.hipsCm, hipsCm) || other.hipsCm == hipsCm) &&
-            (identical(other.clothingSize, clothingSize) ||
-                other.clothingSize == clothingSize));
+            (identical(other.hipsCm, hipsCm) || other.hipsCm == hipsCm));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, email, name, avatar,
-      heightCm, weightKg, chestCm, waistCm, hipsCm, clothingSize);
+  int get hashCode => Object.hash(runtimeType, id, email, name, avatar, gender,
+      isOnboarded, heightCm, weightKg, chestCm, waistCm, hipsCm);
 
   @override
   String toString() {
-    return 'User(id: $id, email: $email, name: $name, avatar: $avatar, heightCm: $heightCm, weightKg: $weightKg, chestCm: $chestCm, waistCm: $waistCm, hipsCm: $hipsCm, clothingSize: $clothingSize)';
+    return 'User(id: $id, email: $email, name: $name, avatar: $avatar, gender: $gender, isOnboarded: $isOnboarded, heightCm: $heightCm, weightKg: $weightKg, chestCm: $chestCm, waistCm: $waistCm, hipsCm: $hipsCm)';
   }
 }
 
@@ -449,12 +468,13 @@ abstract mixin class _$UserCopyWith<$Res> implements $UserCopyWith<$Res> {
       String email,
       String? name,
       String? avatar,
-      double? heightCm,
-      double? weightKg,
-      double? chestCm,
-      double? waistCm,
-      double? hipsCm,
-      String? clothingSize});
+      String? gender,
+      bool isOnboarded,
+      int? heightCm,
+      int? weightKg,
+      int? chestCm,
+      int? waistCm,
+      int? hipsCm});
 }
 
 /// @nodoc
@@ -473,12 +493,13 @@ class __$UserCopyWithImpl<$Res> implements _$UserCopyWith<$Res> {
     Object? email = null,
     Object? name = freezed,
     Object? avatar = freezed,
+    Object? gender = freezed,
+    Object? isOnboarded = null,
     Object? heightCm = freezed,
     Object? weightKg = freezed,
     Object? chestCm = freezed,
     Object? waistCm = freezed,
     Object? hipsCm = freezed,
-    Object? clothingSize = freezed,
   }) {
     return _then(_User(
       id: null == id
@@ -497,30 +518,34 @@ class __$UserCopyWithImpl<$Res> implements _$UserCopyWith<$Res> {
           ? _self.avatar
           : avatar // ignore: cast_nullable_to_non_nullable
               as String?,
+      gender: freezed == gender
+          ? _self.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isOnboarded: null == isOnboarded
+          ? _self.isOnboarded
+          : isOnboarded // ignore: cast_nullable_to_non_nullable
+              as bool,
       heightCm: freezed == heightCm
           ? _self.heightCm
           : heightCm // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       weightKg: freezed == weightKg
           ? _self.weightKg
           : weightKg // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       chestCm: freezed == chestCm
           ? _self.chestCm
           : chestCm // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       waistCm: freezed == waistCm
           ? _self.waistCm
           : waistCm // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       hipsCm: freezed == hipsCm
           ? _self.hipsCm
           : hipsCm // ignore: cast_nullable_to_non_nullable
-              as double?,
-      clothingSize: freezed == clothingSize
-          ? _self.clothingSize
-          : clothingSize // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as int?,
     ));
   }
 }

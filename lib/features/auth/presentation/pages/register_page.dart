@@ -32,6 +32,7 @@ class _RegisterView extends StatefulWidget {
 
 class _RegisterViewState extends State<_RegisterView> {
   final _nameController = TextEditingController();
+  final _surnameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -40,6 +41,7 @@ class _RegisterViewState extends State<_RegisterView> {
   @override
   void dispose() {
     _nameController.dispose();
+    _surnameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -51,7 +53,8 @@ class _RegisterViewState extends State<_RegisterView> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         state.whenOrNull(
-          authenticated: (_) => context.go(AppRoutes.feed),
+          authenticated: (user) => context.go(
+              user.isOnboarded ? AppRoutes.feed : AppRoutes.onboarding),
           error: (msg) => AppSnackbar.error(context, msg),
         );
       },
@@ -84,20 +87,35 @@ class _RegisterViewState extends State<_RegisterView> {
                     ),
                     const SizedBox(height: AppSizes.space8),
                     Text(
-                      'Moda dünyasına katılmak için\nbilgilerini gir.',
+                      'Moda dünyasına katılmak için bilgilerini gir.',
                       style: context.appTextTheme.bodyMedium?.copyWith(
                         color: cs.onSurfaceVariant,
-                        height: 1.5,
+                      
                       ),
                     ),
                     const SizedBox(height: AppSizes.space40),
                     // Ad Soyad
-                    BlackTextField(
-                      controller: _nameController,
-                      label: 'Ad Soyad',
-                      textInputAction: TextInputAction.next,
-                      validator: (v) =>
-                          v?.isEmpty == true ? 'Ad gerekli' : null,
+                    Row(spacing: AppSizes.space8,
+                      children: [
+                        Expanded(
+                          child: BlackTextField(
+                            controller: _nameController,
+                            label: 'Ad',
+                            textInputAction: TextInputAction.next,
+                            validator: (v) =>
+                                v?.isEmpty == true ? 'Ad gerekli' : null,
+                          ),
+                        ),
+                         Expanded(
+                           child: BlackTextField(
+                            controller: _surnameController,
+                            label: 'Soyad',
+                            textInputAction: TextInputAction.next,
+                            validator: (v) =>
+                                v?.isEmpty == true ? 'Soyad gerekli' : null,
+                                                   ),
+                         ),
+                      ],
                     ),
                     const SizedBox(height: AppSizes.space16),
                     // Email
@@ -183,11 +201,13 @@ class _RegisterViewState extends State<_RegisterView> {
 
   void _onRegister() {
     if (_formKey.currentState?.validate() != true) return;
+    final fullName =
+        '${_nameController.text.trim()} ${_surnameController.text.trim()}'.trim();
     context.read<AuthBloc>().add(
           AuthEvent.registerRequested(
             email: _emailController.text.trim(),
             password: _passwordController.text,
-            name: _nameController.text.trim(),
+            name: fullName,
           ),
         );
   }

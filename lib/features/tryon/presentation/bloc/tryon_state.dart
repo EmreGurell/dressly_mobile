@@ -9,6 +9,7 @@ sealed class TryonState with _$TryonState {
   const factory TryonState.initial() = _Initial;
   const factory TryonState.photoSelected(XFile photo) = _PhotoSelected;
   const factory TryonState.loading(XFile photo) = _Loading;
+  const factory TryonState.polling(XFile photo, TryonResult result) = _Polling;
   const factory TryonState.success(TryonResult result) = _Success;
   const factory TryonState.resultSaved() = _ResultSaved;
   const factory TryonState.error(String message) = _Error;

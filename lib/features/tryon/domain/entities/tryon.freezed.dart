@@ -15,8 +15,14 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TryonResult {
   int get id;
-  String get resultImageUrl;
   int get productId;
+  String get productName;
+  String get productImageUrl;
+  String get userPhotoUrl;
+  String get status;
+  String? get resultImageUrl;
+  String? get errorMessage;
+  String get createdAt;
 
   /// Create a copy of TryonResult
   /// with the given fields replaced by the non-null parameter values.
@@ -31,18 +37,39 @@ mixin _$TryonResult {
         (other.runtimeType == runtimeType &&
             other is TryonResult &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.productId, productId) ||
+                other.productId == productId) &&
+            (identical(other.productName, productName) ||
+                other.productName == productName) &&
+            (identical(other.productImageUrl, productImageUrl) ||
+                other.productImageUrl == productImageUrl) &&
+            (identical(other.userPhotoUrl, userPhotoUrl) ||
+                other.userPhotoUrl == userPhotoUrl) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.resultImageUrl, resultImageUrl) ||
                 other.resultImageUrl == resultImageUrl) &&
-            (identical(other.productId, productId) ||
-                other.productId == productId));
+            (identical(other.errorMessage, errorMessage) ||
+                other.errorMessage == errorMessage) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, resultImageUrl, productId);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      productId,
+      productName,
+      productImageUrl,
+      userPhotoUrl,
+      status,
+      resultImageUrl,
+      errorMessage,
+      createdAt);
 
   @override
   String toString() {
-    return 'TryonResult(id: $id, resultImageUrl: $resultImageUrl, productId: $productId)';
+    return 'TryonResult(id: $id, productId: $productId, productName: $productName, productImageUrl: $productImageUrl, userPhotoUrl: $userPhotoUrl, status: $status, resultImageUrl: $resultImageUrl, errorMessage: $errorMessage, createdAt: $createdAt)';
   }
 }
 
@@ -52,7 +79,16 @@ abstract mixin class $TryonResultCopyWith<$Res> {
           TryonResult value, $Res Function(TryonResult) _then) =
       _$TryonResultCopyWithImpl;
   @useResult
-  $Res call({int id, String resultImageUrl, int productId});
+  $Res call(
+      {int id,
+      int productId,
+      String productName,
+      String productImageUrl,
+      String userPhotoUrl,
+      String status,
+      String? resultImageUrl,
+      String? errorMessage,
+      String createdAt});
 }
 
 /// @nodoc
@@ -68,22 +104,52 @@ class _$TryonResultCopyWithImpl<$Res> implements $TryonResultCopyWith<$Res> {
   @override
   $Res call({
     Object? id = null,
-    Object? resultImageUrl = null,
     Object? productId = null,
+    Object? productName = null,
+    Object? productImageUrl = null,
+    Object? userPhotoUrl = null,
+    Object? status = null,
+    Object? resultImageUrl = freezed,
+    Object? errorMessage = freezed,
+    Object? createdAt = null,
   }) {
     return _then(_self.copyWith(
       id: null == id
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      resultImageUrl: null == resultImageUrl
-          ? _self.resultImageUrl
-          : resultImageUrl // ignore: cast_nullable_to_non_nullable
-              as String,
       productId: null == productId
           ? _self.productId
           : productId // ignore: cast_nullable_to_non_nullable
               as int,
+      productName: null == productName
+          ? _self.productName
+          : productName // ignore: cast_nullable_to_non_nullable
+              as String,
+      productImageUrl: null == productImageUrl
+          ? _self.productImageUrl
+          : productImageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      userPhotoUrl: null == userPhotoUrl
+          ? _self.userPhotoUrl
+          : userPhotoUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: null == status
+          ? _self.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
+      resultImageUrl: freezed == resultImageUrl
+          ? _self.resultImageUrl
+          : resultImageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      errorMessage: freezed == errorMessage
+          ? _self.errorMessage
+          : errorMessage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      createdAt: null == createdAt
+          ? _self.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -179,13 +245,32 @@ extension TryonResultPatterns on TryonResult {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(int id, String resultImageUrl, int productId)? $default, {
+    TResult Function(
+            int id,
+            int productId,
+            String productName,
+            String productImageUrl,
+            String userPhotoUrl,
+            String status,
+            String? resultImageUrl,
+            String? errorMessage,
+            String createdAt)?
+        $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _TryonResult() when $default != null:
-        return $default(_that.id, _that.resultImageUrl, _that.productId);
+        return $default(
+            _that.id,
+            _that.productId,
+            _that.productName,
+            _that.productImageUrl,
+            _that.userPhotoUrl,
+            _that.status,
+            _that.resultImageUrl,
+            _that.errorMessage,
+            _that.createdAt);
       case _:
         return orElse();
     }
@@ -206,12 +291,31 @@ extension TryonResultPatterns on TryonResult {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(int id, String resultImageUrl, int productId) $default,
+    TResult Function(
+            int id,
+            int productId,
+            String productName,
+            String productImageUrl,
+            String userPhotoUrl,
+            String status,
+            String? resultImageUrl,
+            String? errorMessage,
+            String createdAt)
+        $default,
   ) {
     final _that = this;
     switch (_that) {
       case _TryonResult():
-        return $default(_that.id, _that.resultImageUrl, _that.productId);
+        return $default(
+            _that.id,
+            _that.productId,
+            _that.productName,
+            _that.productImageUrl,
+            _that.userPhotoUrl,
+            _that.status,
+            _that.resultImageUrl,
+            _that.errorMessage,
+            _that.createdAt);
     }
   }
 
@@ -229,12 +333,31 @@ extension TryonResultPatterns on TryonResult {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(int id, String resultImageUrl, int productId)? $default,
+    TResult? Function(
+            int id,
+            int productId,
+            String productName,
+            String productImageUrl,
+            String userPhotoUrl,
+            String status,
+            String? resultImageUrl,
+            String? errorMessage,
+            String createdAt)?
+        $default,
   ) {
     final _that = this;
     switch (_that) {
       case _TryonResult() when $default != null:
-        return $default(_that.id, _that.resultImageUrl, _that.productId);
+        return $default(
+            _that.id,
+            _that.productId,
+            _that.productName,
+            _that.productImageUrl,
+            _that.userPhotoUrl,
+            _that.status,
+            _that.resultImageUrl,
+            _that.errorMessage,
+            _that.createdAt);
       case _:
         return null;
     }
@@ -246,15 +369,33 @@ extension TryonResultPatterns on TryonResult {
 class _TryonResult implements TryonResult {
   const _TryonResult(
       {required this.id,
-      required this.resultImageUrl,
-      required this.productId});
+      required this.productId,
+      required this.productName,
+      required this.productImageUrl,
+      required this.userPhotoUrl,
+      required this.status,
+      this.resultImageUrl,
+      this.errorMessage,
+      required this.createdAt});
 
   @override
   final int id;
   @override
-  final String resultImageUrl;
-  @override
   final int productId;
+  @override
+  final String productName;
+  @override
+  final String productImageUrl;
+  @override
+  final String userPhotoUrl;
+  @override
+  final String status;
+  @override
+  final String? resultImageUrl;
+  @override
+  final String? errorMessage;
+  @override
+  final String createdAt;
 
   /// Create a copy of TryonResult
   /// with the given fields replaced by the non-null parameter values.
@@ -270,18 +411,39 @@ class _TryonResult implements TryonResult {
         (other.runtimeType == runtimeType &&
             other is _TryonResult &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.productId, productId) ||
+                other.productId == productId) &&
+            (identical(other.productName, productName) ||
+                other.productName == productName) &&
+            (identical(other.productImageUrl, productImageUrl) ||
+                other.productImageUrl == productImageUrl) &&
+            (identical(other.userPhotoUrl, userPhotoUrl) ||
+                other.userPhotoUrl == userPhotoUrl) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.resultImageUrl, resultImageUrl) ||
                 other.resultImageUrl == resultImageUrl) &&
-            (identical(other.productId, productId) ||
-                other.productId == productId));
+            (identical(other.errorMessage, errorMessage) ||
+                other.errorMessage == errorMessage) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, resultImageUrl, productId);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      productId,
+      productName,
+      productImageUrl,
+      userPhotoUrl,
+      status,
+      resultImageUrl,
+      errorMessage,
+      createdAt);
 
   @override
   String toString() {
-    return 'TryonResult(id: $id, resultImageUrl: $resultImageUrl, productId: $productId)';
+    return 'TryonResult(id: $id, productId: $productId, productName: $productName, productImageUrl: $productImageUrl, userPhotoUrl: $userPhotoUrl, status: $status, resultImageUrl: $resultImageUrl, errorMessage: $errorMessage, createdAt: $createdAt)';
   }
 }
 
@@ -293,7 +455,16 @@ abstract mixin class _$TryonResultCopyWith<$Res>
       __$TryonResultCopyWithImpl;
   @override
   @useResult
-  $Res call({int id, String resultImageUrl, int productId});
+  $Res call(
+      {int id,
+      int productId,
+      String productName,
+      String productImageUrl,
+      String userPhotoUrl,
+      String status,
+      String? resultImageUrl,
+      String? errorMessage,
+      String createdAt});
 }
 
 /// @nodoc
@@ -309,22 +480,52 @@ class __$TryonResultCopyWithImpl<$Res> implements _$TryonResultCopyWith<$Res> {
   @pragma('vm:prefer-inline')
   $Res call({
     Object? id = null,
-    Object? resultImageUrl = null,
     Object? productId = null,
+    Object? productName = null,
+    Object? productImageUrl = null,
+    Object? userPhotoUrl = null,
+    Object? status = null,
+    Object? resultImageUrl = freezed,
+    Object? errorMessage = freezed,
+    Object? createdAt = null,
   }) {
     return _then(_TryonResult(
       id: null == id
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      resultImageUrl: null == resultImageUrl
-          ? _self.resultImageUrl
-          : resultImageUrl // ignore: cast_nullable_to_non_nullable
-              as String,
       productId: null == productId
           ? _self.productId
           : productId // ignore: cast_nullable_to_non_nullable
               as int,
+      productName: null == productName
+          ? _self.productName
+          : productName // ignore: cast_nullable_to_non_nullable
+              as String,
+      productImageUrl: null == productImageUrl
+          ? _self.productImageUrl
+          : productImageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      userPhotoUrl: null == userPhotoUrl
+          ? _self.userPhotoUrl
+          : userPhotoUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: null == status
+          ? _self.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
+      resultImageUrl: freezed == resultImageUrl
+          ? _self.resultImageUrl
+          : resultImageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      errorMessage: freezed == errorMessage
+          ? _self.errorMessage
+          : errorMessage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      createdAt: null == createdAt
+          ? _self.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }

@@ -54,25 +54,33 @@ class GetMeUseCase {
   Future<Either<Failure, User>> call() => _repository.getMe();
 }
 
+class ForgotPasswordUseCase {
+  final AuthRepository _repository;
+  ForgotPasswordUseCase(this._repository);
+
+  Future<Either<Failure, void>> call(String email) =>
+      _repository.forgotPassword(email);
+}
+
 class UpdateMeasurementsUseCase {
   final AuthRepository _repository;
   UpdateMeasurementsUseCase(this._repository);
 
   Future<Either<Failure, User>> call({
-    double? heightCm,
-    double? weightKg,
-    double? chestCm,
-    double? waistCm,
-    double? hipsCm,
-    String? clothingSize,
+    String? gender,
+    int? heightCm,
+    int? weightKg,
+    int? chestCm,
+    int? waistCm,
+    int? hipsCm,
   }) =>
       _repository.updateMeasurements(
+        gender: gender,
         heightCm: heightCm,
         weightKg: weightKg,
         chestCm: chestCm,
         waistCm: waistCm,
         hipsCm: hipsCm,
-        clothingSize: clothingSize,
       );
 }
 

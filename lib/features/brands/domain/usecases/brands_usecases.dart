@@ -11,6 +11,14 @@ class GetBrandsUseCase {
   Future<Either<Failure, List<Brand>>> call() => _repository.getBrands();
 }
 
+class GetProductsUseCase {
+  final BrandsRepository _repository;
+  GetProductsUseCase(this._repository);
+
+  Future<Either<Failure, List<Product>>> call(int page, {String? search}) =>
+      _repository.getProducts(page, search: search);
+}
+
 class GetBrandProductsUseCase {
   final BrandsRepository _repository;
   GetBrandProductsUseCase(this._repository);
@@ -19,6 +27,7 @@ class GetBrandProductsUseCase {
     int brandId,
     int page, {
     String? category,
+    String? search,
   }) =>
-      _repository.getBrandProducts(brandId, page, category: category);
+      _repository.getBrandProducts(brandId, page, category: category, search: search);
 }

@@ -49,7 +49,8 @@ class _EmailLoginViewState extends State<_EmailLoginView> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         state.whenOrNull(
-          authenticated: (_) => context.go(AppRoutes.feed),
+          authenticated: (user) => context.go(
+              user.isOnboarded ? AppRoutes.feed : AppRoutes.onboarding),
           error: (msg) => AppSnackbar.error(context, msg),
         );
       },
@@ -77,15 +78,15 @@ class _EmailLoginViewState extends State<_EmailLoginView> {
                       style: context.appTextTheme.displaySmall?.copyWith(
                         fontWeight: FontWeight.w900,
                         color: cs.onSurface,
-                        letterSpacing: -0.5,
+                      
                       ),
                     ),
                     const SizedBox(height: AppSizes.space8),
                     Text(
-                      'Hesabına erişmek için\nbilgilerini gir.',
+                      'Hesabına erişmek için bilgilerini gir.',
                       style: context.appTextTheme.bodyMedium?.copyWith(
                         color: cs.onSurfaceVariant,
-                        height: 1.5,
+                      
                       ),
                     ),
                     const SizedBox(height: AppSizes.space40),
@@ -124,7 +125,7 @@ class _EmailLoginViewState extends State<_EmailLoginView> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
-                        onTap: () {},
+                        onTap: () => context.push(AppRoutes.forgotPassword),
                         child: Text(
                           'Şifremi unuttum',
                           style: context.appTextTheme.labelMedium?.copyWith(

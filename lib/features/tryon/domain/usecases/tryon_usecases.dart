@@ -4,13 +4,29 @@ import 'package:ai_try_on/core/error/failures.dart';
 import 'package:ai_try_on/features/tryon/domain/entities/tryon.dart';
 import 'package:ai_try_on/features/tryon/domain/repositories/tryon_repository.dart';
 
-class TryOnUseCase {
+class CreateTryOnUseCase {
   final TryonRepository _repository;
-  TryOnUseCase(this._repository);
+  CreateTryOnUseCase(this._repository);
 
   Future<Either<Failure, TryonResult>> call({
-    required XFile userPhoto,
     required int productId,
+    required XFile userPhoto,
   }) =>
-      _repository.tryOn(userPhoto: userPhoto, productId: productId);
+      _repository.createTryOn(productId: productId, userPhoto: userPhoto);
+}
+
+class GetTryOnStatusUseCase {
+  final TryonRepository _repository;
+  GetTryOnStatusUseCase(this._repository);
+
+  Future<Either<Failure, TryonResult>> call(int tryonId) =>
+      _repository.getTryOnStatus(tryonId);
+}
+
+class ListTryOnsUseCase {
+  final TryonRepository _repository;
+  ListTryOnsUseCase(this._repository);
+
+  Future<Either<Failure, List<TryonResult>>> call() =>
+      _repository.listTryOns();
 }

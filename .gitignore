@@ -5,9 +5,11 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
 
 # IntelliJ related
@@ -53,6 +55,11 @@ ios/Runner/GeneratedPluginRegistrant.*
 .env
 .env.*
 !.env.example
+
+# Firebase credentials (server-side, never commit)
+firebase-service-account.json
+google-services.json
+GoogleService-Info.plist
 
 # Coverage
 coverage/

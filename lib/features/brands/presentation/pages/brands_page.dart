@@ -10,13 +10,9 @@ import 'package:ai_try_on/features/brands/domain/entities/brands.dart';
 import 'package:ai_try_on/features/brands/presentation/bloc/brands_bloc.dart';
 import 'package:ai_try_on/features/brands/presentation/bloc/brands_event.dart';
 import 'package:ai_try_on/features/brands/presentation/bloc/brands_state.dart';
-import 'package:ai_try_on/shared/theme/app_colors.dart';
-import 'package:ai_try_on/shared/theme/app_padding.dart';
-import 'package:ai_try_on/shared/theme/app_radius.dart';
-import 'package:ai_try_on/shared/theme/app_sizes.dart';
-import 'package:ai_try_on/shared/widgets/app_empty_widget.dart';
 import 'package:ai_try_on/shared/widgets/app_error_widget.dart';
 import 'package:ai_try_on/shared/widgets/app_loading_widget.dart';
+import 'package:ai_try_on/core/extensions/l10n_extension.dart';
 
 class BrandsPage extends StatelessWidget {
   const BrandsPage({super.key});
@@ -36,7 +32,6 @@ class _BrandsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Brands')),
       body: BlocBuilder<BrandsBloc, BrandsState>(
         builder: (context, state) => state.when(
           initial: () => const SizedBox.shrink(),
@@ -46,111 +41,187 @@ class _BrandsView extends StatelessWidget {
             onRetry: () =>
                 context.read<BrandsBloc>().add(const BrandsEvent.fetchBrands()),
           ),
-          loaded: (brands) => brands.isEmpty
-              ? const AppEmptyWidget()
-              : _BrandsGrid(brands: brands),
+          loaded: (brands, _, __, ___, ____, _____, ______, _______) =>
+              _BannerList(brands: brands),
         ),
       ),
     );
   }
 }
 
-class _BrandsGrid extends StatelessWidget {
+class _BannerList extends StatelessWidget {
   final List<Brand> brands;
-  const _BrandsGrid({required this.brands});
+  const _BannerList({required this.brands});
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: AppPadding.p16,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: AppSizes.space12,
-        mainAxisSpacing: AppSizes.space12,
-        childAspectRatio: 0.85,
-      ),
-      itemCount: brands.length,
-      itemBuilder: (context, index) => _BrandCard(brand: brands[index]),
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          pinned: true,
+          title: Text(
+            context.l10n.brandsTitle,
+            style: context.appTextTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: AppPadding.p16,
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              // Tümü banner
+              _BrandBanner(
+                label: context.l10n.allBrandsBanner,
+                logoUrl: null,
+                onTap: () => context.push(AppRoutes.allProducts),
+              ),
+              const SizedBox(height: AppSizes.space12),
+              // Marka bannerları
+              ...brands.map(
+                (brand) => Padding(
+                  padding: const EdgeInsets.only(bottom: AppSizes.space12),
+                  child: _BrandBanner(
+                    label: brand.name,
+                    logoUrl: brand.logoUrl.isNotEmpty ? brand.logoUrl : null,
+                    productCount: brand.productCount,
+                    onTap: () => context.push(
+                      AppRoutes.brandDetail(brand.id.toString()),
+                      extra: brand,
+                    ),
+                  ),
+                ),
+              ),
+            ]),
+          ),
+        ),
+      ],
     );
   }
 }
 
-class _BrandCard extends StatelessWidget {
-  final Brand brand;
-  const _BrandCard({required this.brand});
+String? _localBannerAsset(String label) {
+  final key = label.toLowerCase().trim();
+  const map = {
+    'zara': 'assets/images/zara_bg.png',
+    'h&m': 'assets/images/hm_bg.png',
+    'pull & bear': 'assets/images/pb_bg.png',
+    'bershka': 'assets/images/bershka_bg.png',
+  };
+  return map[key];
+}
+
+class _BrandBanner extends StatelessWidget {
+  final String label;
+  final String? logoUrl;
+  final int? productCount;
+  final VoidCallback onTap;
+
+  const _BrandBanner({
+    required this.label,
+    required this.logoUrl,
+    required this.onTap,
+    this.productCount,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final localAsset = _localBannerAsset(label);
+
     return GestureDetector(
-      onTap: () => context.push(
-        AppRoutes.brandDetail(brand.id.toString()),
-        extra: brand,
-      ),
+      onTap: onTap,
       child: Container(
+        height: 150,
         decoration: BoxDecoration(
-          color: AppColors.white,
           borderRadius: AppRadius.circular12,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.black.withOpacity(0.06),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          border: Border.all(color: cs.outlineVariant),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ClipRRect(
-              borderRadius: AppRadius.circular100,
-              child: CachedNetworkImage(
-                imageUrl: brand.logoUrl,
-                width: AppSizes.space48 * 2,
-                height: AppSizes.space48 * 2,
-                fit: BoxFit.cover,
-                placeholder: (_, __) => const _LogoPlaceholder(),
-                errorWidget: (_, __, ___) => const _LogoPlaceholder(),
-              ),
-            ),
-            const SizedBox(height: AppSizes.space12),
-            Padding(
-              padding: AppPadding.horizontal12,
-              child: Text(
-                brand.name,
-                style: context.appTextTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
+        child: ClipRRect(
+          borderRadius: AppRadius.circular12,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Arka plan
+              if (localAsset != null)
+                Image.asset(localAsset, fit: BoxFit.cover)
+              else if (logoUrl != null)
+                CachedNetworkImage(
+                  imageUrl: logoUrl!,
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) =>
+                      Container(color: cs.surfaceContainerHighest),
+                  errorWidget: (_, __, ___) =>
+                      Container(color: cs.surfaceContainerHighest),
+                )
+              else
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [cs.primaryContainer, cs.secondaryContainer],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+
+              // Karanlık overlay
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xAA000000),
+                      Color(0x44000000),
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                ),
               ),
-            ),
-            if (brand.productCount > 0) ...[
-              const SizedBox(height: AppSizes.space4),
-              Text(
-                '${brand.productCount} products',
-                style: context.appTextTheme.bodySmall?.copyWith(
-                      color: AppColors.grey500,
+
+              // İçerik
+              Padding(
+                padding: AppPadding.p16,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            label.toUpperCase(),
+                            style:
+                                context.appTextTheme.titleMedium?.copyWith(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          if (productCount != null && productCount! > 0) ...[
+                            const SizedBox(height: AppSizes.space4),
+                            Text(
+                              context.l10n.productCount(productCount!),
+                              style: context.appTextTheme.bodySmall?.copyWith(
+                                color: AppColors.white.withValues(alpha: 0.75),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
+                    PhosphorIcon(
+                      PhosphorIcons.caretRight(),
+                      color: AppColors.white.withValues(alpha: 0.75),
+                      size: AppSizes.iconMedium,
+                    ),
+                  ],
+                ),
               ),
             ],
-          ],
+          ),
         ),
       ),
-    );
-  }
-}
-
-class _LogoPlaceholder extends StatelessWidget {
-  const _LogoPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: AppSizes.space48 * 2,
-      height: AppSizes.space48 * 2,
-      color: AppColors.grey100,
-      child: PhosphorIcon(PhosphorIcons.storefront(), color: AppColors.grey400),
     );
   }
 }

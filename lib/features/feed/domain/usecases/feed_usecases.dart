@@ -33,3 +33,11 @@ class RefreshFeedUseCase {
 
   Future<Either<Failure, void>> call() => _repository.refreshFeed();
 }
+
+class GetRecommendationsUseCase {
+  final FeedRepository _repository;
+  GetRecommendationsUseCase(this._repository);
+
+  Future<Either<Failure, List<Product>>> call() =>
+      _repository.getRecommendations();
+}

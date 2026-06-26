@@ -15,10 +15,21 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TryonResultModel {
   int get id;
-  @JsonKey(name: 'result_image_url')
-  String get resultImageUrl;
   @JsonKey(name: 'product_id')
   int get productId;
+  @JsonKey(name: 'product_name')
+  String get productName;
+  @JsonKey(name: 'product_image_url')
+  String get productImageUrl;
+  @JsonKey(name: 'user_photo_url')
+  String get userPhotoUrl;
+  String get status;
+  @JsonKey(name: 'result_image_url')
+  String? get resultImageUrl;
+  @JsonKey(name: 'error_message')
+  String? get errorMessage;
+  @JsonKey(name: 'created_at')
+  String get createdAt;
 
   /// Create a copy of TryonResultModel
   /// with the given fields replaced by the non-null parameter values.
@@ -37,19 +48,40 @@ mixin _$TryonResultModel {
         (other.runtimeType == runtimeType &&
             other is TryonResultModel &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.productId, productId) ||
+                other.productId == productId) &&
+            (identical(other.productName, productName) ||
+                other.productName == productName) &&
+            (identical(other.productImageUrl, productImageUrl) ||
+                other.productImageUrl == productImageUrl) &&
+            (identical(other.userPhotoUrl, userPhotoUrl) ||
+                other.userPhotoUrl == userPhotoUrl) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.resultImageUrl, resultImageUrl) ||
                 other.resultImageUrl == resultImageUrl) &&
-            (identical(other.productId, productId) ||
-                other.productId == productId));
+            (identical(other.errorMessage, errorMessage) ||
+                other.errorMessage == errorMessage) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, resultImageUrl, productId);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      productId,
+      productName,
+      productImageUrl,
+      userPhotoUrl,
+      status,
+      resultImageUrl,
+      errorMessage,
+      createdAt);
 
   @override
   String toString() {
-    return 'TryonResultModel(id: $id, resultImageUrl: $resultImageUrl, productId: $productId)';
+    return 'TryonResultModel(id: $id, productId: $productId, productName: $productName, productImageUrl: $productImageUrl, userPhotoUrl: $userPhotoUrl, status: $status, resultImageUrl: $resultImageUrl, errorMessage: $errorMessage, createdAt: $createdAt)';
   }
 }
 
@@ -61,8 +93,14 @@ abstract mixin class $TryonResultModelCopyWith<$Res> {
   @useResult
   $Res call(
       {int id,
-      @JsonKey(name: 'result_image_url') String resultImageUrl,
-      @JsonKey(name: 'product_id') int productId});
+      @JsonKey(name: 'product_id') int productId,
+      @JsonKey(name: 'product_name') String productName,
+      @JsonKey(name: 'product_image_url') String productImageUrl,
+      @JsonKey(name: 'user_photo_url') String userPhotoUrl,
+      String status,
+      @JsonKey(name: 'result_image_url') String? resultImageUrl,
+      @JsonKey(name: 'error_message') String? errorMessage,
+      @JsonKey(name: 'created_at') String createdAt});
 }
 
 /// @nodoc
@@ -79,22 +117,52 @@ class _$TryonResultModelCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? resultImageUrl = null,
     Object? productId = null,
+    Object? productName = null,
+    Object? productImageUrl = null,
+    Object? userPhotoUrl = null,
+    Object? status = null,
+    Object? resultImageUrl = freezed,
+    Object? errorMessage = freezed,
+    Object? createdAt = null,
   }) {
     return _then(_self.copyWith(
       id: null == id
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      resultImageUrl: null == resultImageUrl
-          ? _self.resultImageUrl
-          : resultImageUrl // ignore: cast_nullable_to_non_nullable
-              as String,
       productId: null == productId
           ? _self.productId
           : productId // ignore: cast_nullable_to_non_nullable
               as int,
+      productName: null == productName
+          ? _self.productName
+          : productName // ignore: cast_nullable_to_non_nullable
+              as String,
+      productImageUrl: null == productImageUrl
+          ? _self.productImageUrl
+          : productImageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      userPhotoUrl: null == userPhotoUrl
+          ? _self.userPhotoUrl
+          : userPhotoUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: null == status
+          ? _self.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
+      resultImageUrl: freezed == resultImageUrl
+          ? _self.resultImageUrl
+          : resultImageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      errorMessage: freezed == errorMessage
+          ? _self.errorMessage
+          : errorMessage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      createdAt: null == createdAt
+          ? _self.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -192,15 +260,30 @@ extension TryonResultModelPatterns on TryonResultModel {
   TResult maybeWhen<TResult extends Object?>(
     TResult Function(
             int id,
-            @JsonKey(name: 'result_image_url') String resultImageUrl,
-            @JsonKey(name: 'product_id') int productId)?
+            @JsonKey(name: 'product_id') int productId,
+            @JsonKey(name: 'product_name') String productName,
+            @JsonKey(name: 'product_image_url') String productImageUrl,
+            @JsonKey(name: 'user_photo_url') String userPhotoUrl,
+            String status,
+            @JsonKey(name: 'result_image_url') String? resultImageUrl,
+            @JsonKey(name: 'error_message') String? errorMessage,
+            @JsonKey(name: 'created_at') String createdAt)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case _TryonResultModel() when $default != null:
-        return $default(_that.id, _that.resultImageUrl, _that.productId);
+        return $default(
+            _that.id,
+            _that.productId,
+            _that.productName,
+            _that.productImageUrl,
+            _that.userPhotoUrl,
+            _that.status,
+            _that.resultImageUrl,
+            _that.errorMessage,
+            _that.createdAt);
       case _:
         return orElse();
     }
@@ -223,14 +306,29 @@ extension TryonResultModelPatterns on TryonResultModel {
   TResult when<TResult extends Object?>(
     TResult Function(
             int id,
-            @JsonKey(name: 'result_image_url') String resultImageUrl,
-            @JsonKey(name: 'product_id') int productId)
+            @JsonKey(name: 'product_id') int productId,
+            @JsonKey(name: 'product_name') String productName,
+            @JsonKey(name: 'product_image_url') String productImageUrl,
+            @JsonKey(name: 'user_photo_url') String userPhotoUrl,
+            String status,
+            @JsonKey(name: 'result_image_url') String? resultImageUrl,
+            @JsonKey(name: 'error_message') String? errorMessage,
+            @JsonKey(name: 'created_at') String createdAt)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _TryonResultModel():
-        return $default(_that.id, _that.resultImageUrl, _that.productId);
+        return $default(
+            _that.id,
+            _that.productId,
+            _that.productName,
+            _that.productImageUrl,
+            _that.userPhotoUrl,
+            _that.status,
+            _that.resultImageUrl,
+            _that.errorMessage,
+            _that.createdAt);
     }
   }
 
@@ -250,14 +348,29 @@ extension TryonResultModelPatterns on TryonResultModel {
   TResult? whenOrNull<TResult extends Object?>(
     TResult? Function(
             int id,
-            @JsonKey(name: 'result_image_url') String resultImageUrl,
-            @JsonKey(name: 'product_id') int productId)?
+            @JsonKey(name: 'product_id') int productId,
+            @JsonKey(name: 'product_name') String productName,
+            @JsonKey(name: 'product_image_url') String productImageUrl,
+            @JsonKey(name: 'user_photo_url') String userPhotoUrl,
+            String status,
+            @JsonKey(name: 'result_image_url') String? resultImageUrl,
+            @JsonKey(name: 'error_message') String? errorMessage,
+            @JsonKey(name: 'created_at') String createdAt)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _TryonResultModel() when $default != null:
-        return $default(_that.id, _that.resultImageUrl, _that.productId);
+        return $default(
+            _that.id,
+            _that.productId,
+            _that.productName,
+            _that.productImageUrl,
+            _that.userPhotoUrl,
+            _that.status,
+            _that.resultImageUrl,
+            _that.errorMessage,
+            _that.createdAt);
       case _:
         return null;
     }
@@ -269,19 +382,42 @@ extension TryonResultModelPatterns on TryonResultModel {
 class _TryonResultModel implements TryonResultModel {
   const _TryonResultModel(
       {required this.id,
-      @JsonKey(name: 'result_image_url') required this.resultImageUrl,
-      @JsonKey(name: 'product_id') required this.productId});
+      @JsonKey(name: 'product_id') required this.productId,
+      @JsonKey(name: 'product_name') required this.productName,
+      @JsonKey(name: 'product_image_url') required this.productImageUrl,
+      @JsonKey(name: 'user_photo_url') required this.userPhotoUrl,
+      required this.status,
+      @JsonKey(name: 'result_image_url') this.resultImageUrl,
+      @JsonKey(name: 'error_message') this.errorMessage,
+      @JsonKey(name: 'created_at') required this.createdAt});
   factory _TryonResultModel.fromJson(Map<String, dynamic> json) =>
       _$TryonResultModelFromJson(json);
 
   @override
   final int id;
   @override
-  @JsonKey(name: 'result_image_url')
-  final String resultImageUrl;
-  @override
   @JsonKey(name: 'product_id')
   final int productId;
+  @override
+  @JsonKey(name: 'product_name')
+  final String productName;
+  @override
+  @JsonKey(name: 'product_image_url')
+  final String productImageUrl;
+  @override
+  @JsonKey(name: 'user_photo_url')
+  final String userPhotoUrl;
+  @override
+  final String status;
+  @override
+  @JsonKey(name: 'result_image_url')
+  final String? resultImageUrl;
+  @override
+  @JsonKey(name: 'error_message')
+  final String? errorMessage;
+  @override
+  @JsonKey(name: 'created_at')
+  final String createdAt;
 
   /// Create a copy of TryonResultModel
   /// with the given fields replaced by the non-null parameter values.
@@ -304,19 +440,40 @@ class _TryonResultModel implements TryonResultModel {
         (other.runtimeType == runtimeType &&
             other is _TryonResultModel &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.productId, productId) ||
+                other.productId == productId) &&
+            (identical(other.productName, productName) ||
+                other.productName == productName) &&
+            (identical(other.productImageUrl, productImageUrl) ||
+                other.productImageUrl == productImageUrl) &&
+            (identical(other.userPhotoUrl, userPhotoUrl) ||
+                other.userPhotoUrl == userPhotoUrl) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.resultImageUrl, resultImageUrl) ||
                 other.resultImageUrl == resultImageUrl) &&
-            (identical(other.productId, productId) ||
-                other.productId == productId));
+            (identical(other.errorMessage, errorMessage) ||
+                other.errorMessage == errorMessage) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, resultImageUrl, productId);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      productId,
+      productName,
+      productImageUrl,
+      userPhotoUrl,
+      status,
+      resultImageUrl,
+      errorMessage,
+      createdAt);
 
   @override
   String toString() {
-    return 'TryonResultModel(id: $id, resultImageUrl: $resultImageUrl, productId: $productId)';
+    return 'TryonResultModel(id: $id, productId: $productId, productName: $productName, productImageUrl: $productImageUrl, userPhotoUrl: $userPhotoUrl, status: $status, resultImageUrl: $resultImageUrl, errorMessage: $errorMessage, createdAt: $createdAt)';
   }
 }
 
@@ -330,8 +487,14 @@ abstract mixin class _$TryonResultModelCopyWith<$Res>
   @useResult
   $Res call(
       {int id,
-      @JsonKey(name: 'result_image_url') String resultImageUrl,
-      @JsonKey(name: 'product_id') int productId});
+      @JsonKey(name: 'product_id') int productId,
+      @JsonKey(name: 'product_name') String productName,
+      @JsonKey(name: 'product_image_url') String productImageUrl,
+      @JsonKey(name: 'user_photo_url') String userPhotoUrl,
+      String status,
+      @JsonKey(name: 'result_image_url') String? resultImageUrl,
+      @JsonKey(name: 'error_message') String? errorMessage,
+      @JsonKey(name: 'created_at') String createdAt});
 }
 
 /// @nodoc
@@ -348,22 +511,52 @@ class __$TryonResultModelCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   $Res call({
     Object? id = null,
-    Object? resultImageUrl = null,
     Object? productId = null,
+    Object? productName = null,
+    Object? productImageUrl = null,
+    Object? userPhotoUrl = null,
+    Object? status = null,
+    Object? resultImageUrl = freezed,
+    Object? errorMessage = freezed,
+    Object? createdAt = null,
   }) {
     return _then(_TryonResultModel(
       id: null == id
           ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      resultImageUrl: null == resultImageUrl
-          ? _self.resultImageUrl
-          : resultImageUrl // ignore: cast_nullable_to_non_nullable
-              as String,
       productId: null == productId
           ? _self.productId
           : productId // ignore: cast_nullable_to_non_nullable
               as int,
+      productName: null == productName
+          ? _self.productName
+          : productName // ignore: cast_nullable_to_non_nullable
+              as String,
+      productImageUrl: null == productImageUrl
+          ? _self.productImageUrl
+          : productImageUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      userPhotoUrl: null == userPhotoUrl
+          ? _self.userPhotoUrl
+          : userPhotoUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: null == status
+          ? _self.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
+      resultImageUrl: freezed == resultImageUrl
+          ? _self.resultImageUrl
+          : resultImageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      errorMessage: freezed == errorMessage
+          ? _self.errorMessage
+          : errorMessage // ignore: cast_nullable_to_non_nullable
+              as String?,
+      createdAt: null == createdAt
+          ? _self.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }

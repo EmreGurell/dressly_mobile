@@ -30,7 +30,8 @@ class _LoginView extends StatelessWidget {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         state.whenOrNull(
-          authenticated: (_) => context.go(AppRoutes.feed),
+          authenticated: (user) => context.go(
+              user.isOnboarded ? AppRoutes.feed : AppRoutes.onboarding),
           error: (msg) => AppSnackbar.error(context, msg),
         );
       },

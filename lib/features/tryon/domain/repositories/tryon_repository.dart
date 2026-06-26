@@ -4,8 +4,12 @@ import 'package:ai_try_on/core/error/failures.dart';
 import 'package:ai_try_on/features/tryon/domain/entities/tryon.dart';
 
 abstract class TryonRepository {
-  Future<Either<Failure, TryonResult>> tryOn({
-    required XFile userPhoto,
+  Future<Either<Failure, TryonResult>> createTryOn({
     required int productId,
+    required XFile userPhoto,
   });
+
+  Future<Either<Failure, TryonResult>> getTryOnStatus(int tryonId);
+
+  Future<Either<Failure, List<TryonResult>>> listTryOns();
 }

@@ -132,9 +132,9 @@ lib/
 | # | Task | Açıklama | Durum |
 |---|------|----------|-------|
 | 50 | Bottom navigation bar yap | Feed, Brands, Saved, Profile | ✅ DONE |
-| 51 | Profil ekranını tasarla | Avatar, isim, istatistikler | 📋 TODO |
-| 52 | Çıkış yapma özelliğini ekle | Logout, token sil | 📋 TODO |
-| 53 | Dark/Light mode desteği ekle | ThemeBloc, sistem temasına göre | 📋 TODO |
+| 51 | Profil ekranını tasarla | Avatar, isim, istatistikler | ✅ DONE |
+| 52 | Çıkış yapma özelliğini ekle | Logout, token sil | ✅ DONE |
+| 53 | Dark/Light mode desteği ekle | ThemeBloc, sistem temasına göre | ✅ DONE |
 
 ---
 

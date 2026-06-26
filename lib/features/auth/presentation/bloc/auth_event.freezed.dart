@@ -56,6 +56,7 @@ extension AuthEventPatterns on AuthEvent {
     TResult Function(_LoginWithAppleRequested value)? loginWithAppleRequested,
     TResult Function(_LogoutRequested value)? logoutRequested,
     TResult Function(_GetMeRequested value)? getMeRequested,
+    TResult Function(_ForgotPasswordRequested value)? forgotPasswordRequested,
     TResult Function(_UpdateMeasurementsRequested value)?
         updateMeasurementsRequested,
     required TResult orElse(),
@@ -74,6 +75,8 @@ extension AuthEventPatterns on AuthEvent {
         return logoutRequested(_that);
       case _GetMeRequested() when getMeRequested != null:
         return getMeRequested(_that);
+      case _ForgotPasswordRequested() when forgotPasswordRequested != null:
+        return forgotPasswordRequested(_that);
       case _UpdateMeasurementsRequested()
           when updateMeasurementsRequested != null:
         return updateMeasurementsRequested(_that);
@@ -105,6 +108,8 @@ extension AuthEventPatterns on AuthEvent {
         loginWithAppleRequested,
     required TResult Function(_LogoutRequested value) logoutRequested,
     required TResult Function(_GetMeRequested value) getMeRequested,
+    required TResult Function(_ForgotPasswordRequested value)
+        forgotPasswordRequested,
     required TResult Function(_UpdateMeasurementsRequested value)
         updateMeasurementsRequested,
   }) {
@@ -122,6 +127,8 @@ extension AuthEventPatterns on AuthEvent {
         return logoutRequested(_that);
       case _GetMeRequested():
         return getMeRequested(_that);
+      case _ForgotPasswordRequested():
+        return forgotPasswordRequested(_that);
       case _UpdateMeasurementsRequested():
         return updateMeasurementsRequested(_that);
     }
@@ -148,6 +155,7 @@ extension AuthEventPatterns on AuthEvent {
     TResult? Function(_LoginWithAppleRequested value)? loginWithAppleRequested,
     TResult? Function(_LogoutRequested value)? logoutRequested,
     TResult? Function(_GetMeRequested value)? getMeRequested,
+    TResult? Function(_ForgotPasswordRequested value)? forgotPasswordRequested,
     TResult? Function(_UpdateMeasurementsRequested value)?
         updateMeasurementsRequested,
   }) {
@@ -165,6 +173,8 @@ extension AuthEventPatterns on AuthEvent {
         return logoutRequested(_that);
       case _GetMeRequested() when getMeRequested != null:
         return getMeRequested(_that);
+      case _ForgotPasswordRequested() when forgotPasswordRequested != null:
+        return forgotPasswordRequested(_that);
       case _UpdateMeasurementsRequested()
           when updateMeasurementsRequested != null:
         return updateMeasurementsRequested(_that);
@@ -194,8 +204,9 @@ extension AuthEventPatterns on AuthEvent {
     TResult Function()? loginWithAppleRequested,
     TResult Function()? logoutRequested,
     TResult Function()? getMeRequested,
-    TResult Function(double? heightCm, double? weightKg, double? chestCm,
-            double? waistCm, double? hipsCm, String? clothingSize)?
+    TResult Function(String email)? forgotPasswordRequested,
+    TResult Function(String? gender, int? heightCm, int? weightKg, int? chestCm,
+            int? waistCm, int? hipsCm)?
         updateMeasurementsRequested,
     required TResult orElse(),
   }) {
@@ -213,10 +224,12 @@ extension AuthEventPatterns on AuthEvent {
         return logoutRequested();
       case _GetMeRequested() when getMeRequested != null:
         return getMeRequested();
+      case _ForgotPasswordRequested() when forgotPasswordRequested != null:
+        return forgotPasswordRequested(_that.email);
       case _UpdateMeasurementsRequested()
           when updateMeasurementsRequested != null:
-        return updateMeasurementsRequested(_that.heightCm, _that.weightKg,
-            _that.chestCm, _that.waistCm, _that.hipsCm, _that.clothingSize);
+        return updateMeasurementsRequested(_that.gender, _that.heightCm,
+            _that.weightKg, _that.chestCm, _that.waistCm, _that.hipsCm);
       case _:
         return orElse();
     }
@@ -244,13 +257,9 @@ extension AuthEventPatterns on AuthEvent {
     required TResult Function() loginWithAppleRequested,
     required TResult Function() logoutRequested,
     required TResult Function() getMeRequested,
-    required TResult Function(
-            double? heightCm,
-            double? weightKg,
-            double? chestCm,
-            double? waistCm,
-            double? hipsCm,
-            String? clothingSize)
+    required TResult Function(String email) forgotPasswordRequested,
+    required TResult Function(String? gender, int? heightCm, int? weightKg,
+            int? chestCm, int? waistCm, int? hipsCm)
         updateMeasurementsRequested,
   }) {
     final _that = this;
@@ -267,9 +276,11 @@ extension AuthEventPatterns on AuthEvent {
         return logoutRequested();
       case _GetMeRequested():
         return getMeRequested();
+      case _ForgotPasswordRequested():
+        return forgotPasswordRequested(_that.email);
       case _UpdateMeasurementsRequested():
-        return updateMeasurementsRequested(_that.heightCm, _that.weightKg,
-            _that.chestCm, _that.waistCm, _that.hipsCm, _that.clothingSize);
+        return updateMeasurementsRequested(_that.gender, _that.heightCm,
+            _that.weightKg, _that.chestCm, _that.waistCm, _that.hipsCm);
     }
   }
 
@@ -294,8 +305,9 @@ extension AuthEventPatterns on AuthEvent {
     TResult? Function()? loginWithAppleRequested,
     TResult? Function()? logoutRequested,
     TResult? Function()? getMeRequested,
-    TResult? Function(double? heightCm, double? weightKg, double? chestCm,
-            double? waistCm, double? hipsCm, String? clothingSize)?
+    TResult? Function(String email)? forgotPasswordRequested,
+    TResult? Function(String? gender, int? heightCm, int? weightKg,
+            int? chestCm, int? waistCm, int? hipsCm)?
         updateMeasurementsRequested,
   }) {
     final _that = this;
@@ -312,10 +324,12 @@ extension AuthEventPatterns on AuthEvent {
         return logoutRequested();
       case _GetMeRequested() when getMeRequested != null:
         return getMeRequested();
+      case _ForgotPasswordRequested() when forgotPasswordRequested != null:
+        return forgotPasswordRequested(_that.email);
       case _UpdateMeasurementsRequested()
           when updateMeasurementsRequested != null:
-        return updateMeasurementsRequested(_that.heightCm, _that.weightKg,
-            _that.chestCm, _that.waistCm, _that.hipsCm, _that.clothingSize);
+        return updateMeasurementsRequested(_that.gender, _that.heightCm,
+            _that.weightKg, _that.chestCm, _that.waistCm, _that.hipsCm);
       case _:
         return null;
     }
@@ -557,21 +571,86 @@ class _GetMeRequested implements AuthEvent {
 
 /// @nodoc
 
+class _ForgotPasswordRequested implements AuthEvent {
+  const _ForgotPasswordRequested(this.email);
+
+  final String email;
+
+  /// Create a copy of AuthEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$ForgotPasswordRequestedCopyWith<_ForgotPasswordRequested> get copyWith =>
+      __$ForgotPasswordRequestedCopyWithImpl<_ForgotPasswordRequested>(
+          this, _$identity);
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _ForgotPasswordRequested &&
+            (identical(other.email, email) || other.email == email));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, email);
+
+  @override
+  String toString() {
+    return 'AuthEvent.forgotPasswordRequested(email: $email)';
+  }
+}
+
+/// @nodoc
+abstract mixin class _$ForgotPasswordRequestedCopyWith<$Res>
+    implements $AuthEventCopyWith<$Res> {
+  factory _$ForgotPasswordRequestedCopyWith(_ForgotPasswordRequested value,
+          $Res Function(_ForgotPasswordRequested) _then) =
+      __$ForgotPasswordRequestedCopyWithImpl;
+  @useResult
+  $Res call({String email});
+}
+
+/// @nodoc
+class __$ForgotPasswordRequestedCopyWithImpl<$Res>
+    implements _$ForgotPasswordRequestedCopyWith<$Res> {
+  __$ForgotPasswordRequestedCopyWithImpl(this._self, this._then);
+
+  final _ForgotPasswordRequested _self;
+  final $Res Function(_ForgotPasswordRequested) _then;
+
+  /// Create a copy of AuthEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? email = null,
+  }) {
+    return _then(_ForgotPasswordRequested(
+      null == email
+          ? _self.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
 class _UpdateMeasurementsRequested implements AuthEvent {
   const _UpdateMeasurementsRequested(
-      {this.heightCm,
+      {this.gender,
+      this.heightCm,
       this.weightKg,
       this.chestCm,
       this.waistCm,
-      this.hipsCm,
-      this.clothingSize});
+      this.hipsCm});
 
-  final double? heightCm;
-  final double? weightKg;
-  final double? chestCm;
-  final double? waistCm;
-  final double? hipsCm;
-  final String? clothingSize;
+  final String? gender;
+  final int? heightCm;
+  final int? weightKg;
+  final int? chestCm;
+  final int? waistCm;
+  final int? hipsCm;
 
   /// Create a copy of AuthEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -586,24 +665,23 @@ class _UpdateMeasurementsRequested implements AuthEvent {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _UpdateMeasurementsRequested &&
+            (identical(other.gender, gender) || other.gender == gender) &&
             (identical(other.heightCm, heightCm) ||
                 other.heightCm == heightCm) &&
             (identical(other.weightKg, weightKg) ||
                 other.weightKg == weightKg) &&
             (identical(other.chestCm, chestCm) || other.chestCm == chestCm) &&
             (identical(other.waistCm, waistCm) || other.waistCm == waistCm) &&
-            (identical(other.hipsCm, hipsCm) || other.hipsCm == hipsCm) &&
-            (identical(other.clothingSize, clothingSize) ||
-                other.clothingSize == clothingSize));
+            (identical(other.hipsCm, hipsCm) || other.hipsCm == hipsCm));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, heightCm, weightKg, chestCm, waistCm, hipsCm, clothingSize);
+      runtimeType, gender, heightCm, weightKg, chestCm, waistCm, hipsCm);
 
   @override
   String toString() {
-    return 'AuthEvent.updateMeasurementsRequested(heightCm: $heightCm, weightKg: $weightKg, chestCm: $chestCm, waistCm: $waistCm, hipsCm: $hipsCm, clothingSize: $clothingSize)';
+    return 'AuthEvent.updateMeasurementsRequested(gender: $gender, heightCm: $heightCm, weightKg: $weightKg, chestCm: $chestCm, waistCm: $waistCm, hipsCm: $hipsCm)';
   }
 }
 
@@ -616,12 +694,12 @@ abstract mixin class _$UpdateMeasurementsRequestedCopyWith<$Res>
       __$UpdateMeasurementsRequestedCopyWithImpl;
   @useResult
   $Res call(
-      {double? heightCm,
-      double? weightKg,
-      double? chestCm,
-      double? waistCm,
-      double? hipsCm,
-      String? clothingSize});
+      {String? gender,
+      int? heightCm,
+      int? weightKg,
+      int? chestCm,
+      int? waistCm,
+      int? hipsCm});
 }
 
 /// @nodoc
@@ -636,38 +714,38 @@ class __$UpdateMeasurementsRequestedCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   $Res call({
+    Object? gender = freezed,
     Object? heightCm = freezed,
     Object? weightKg = freezed,
     Object? chestCm = freezed,
     Object? waistCm = freezed,
     Object? hipsCm = freezed,
-    Object? clothingSize = freezed,
   }) {
     return _then(_UpdateMeasurementsRequested(
+      gender: freezed == gender
+          ? _self.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as String?,
       heightCm: freezed == heightCm
           ? _self.heightCm
           : heightCm // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       weightKg: freezed == weightKg
           ? _self.weightKg
           : weightKg // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       chestCm: freezed == chestCm
           ? _self.chestCm
           : chestCm // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       waistCm: freezed == waistCm
           ? _self.waistCm
           : waistCm // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       hipsCm: freezed == hipsCm
           ? _self.hipsCm
           : hipsCm // ignore: cast_nullable_to_non_nullable
-              as double?,
-      clothingSize: freezed == clothingSize
-          ? _self.clothingSize
-          : clothingSize // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as int?,
     ));
   }
 }

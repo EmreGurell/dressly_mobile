@@ -5,9 +5,11 @@ import 'package:ai_try_on/features/feed/domain/entities/product.dart';
 
 abstract class BrandsRepository {
   Future<Either<Failure, List<Brand>>> getBrands();
+  Future<Either<Failure, List<Product>>> getProducts(int page, {String? search});
   Future<Either<Failure, List<Product>>> getBrandProducts(
     int brandId,
     int page, {
     String? category,
+    String? search,
   });
 }

@@ -6,7 +6,13 @@ part 'tryon.freezed.dart';
 sealed class TryonResult with _$TryonResult {
   const factory TryonResult({
     required int id,
-    required String resultImageUrl,
     required int productId,
+    required String productName,
+    required String productImageUrl,
+    required String userPhotoUrl,
+    required String status,
+    String? resultImageUrl,
+    String? errorMessage,
+    required String createdAt,
   }) = _TryonResult;
 }

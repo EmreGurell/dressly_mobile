@@ -8,6 +8,7 @@ sealed class Brand with _$Brand {
     required int id,
     required String name,
     required String logoUrl,
+    @Default('') String websiteUrl,
     @Default(0) int productCount,
   }) = _Brand;
 }

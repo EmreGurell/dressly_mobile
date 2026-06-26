@@ -16,10 +16,8 @@ class ProfileHeader extends StatelessWidget {
       width: double.infinity,
       padding: AppPadding.p24,
       decoration: BoxDecoration(
-        color: cs.surface,
-        border: Border(
-          bottom: BorderSide(color: cs.outlineVariant),
-        ),
+        color: cs.surfaceContainerLowest,
+       
       ),
       child: Column(
         children: [

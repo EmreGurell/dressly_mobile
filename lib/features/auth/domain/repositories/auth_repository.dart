@@ -29,12 +29,12 @@ abstract class AuthRepository {
 
   Future<Either<Failure, User>> getMe();
   Future<Either<Failure, User>> updateMeasurements({
-    double? heightCm,
-    double? weightKg,
-    double? chestCm,
-    double? waistCm,
-    double? hipsCm,
-    String? clothingSize,
+    String? gender,
+    int? heightCm,
+    int? weightKg,
+    int? chestCm,
+    int? waistCm,
+    int? hipsCm,
   });
 }
 

@@ -14,12 +14,12 @@ abstract class AuthRemoteDataSource {
   Future<void> verifyOtp({required String email, required String otp});
   Future<UserModel> getMe();
   Future<UserModel> updateMeasurements({
-    double? heightCm,
-    double? weightKg,
-    double? chestCm,
-    double? waistCm,
-    double? hipsCm,
-    String? clothingSize,
+    String? gender,
+    int? heightCm,
+    int? weightKg,
+    int? chestCm,
+    int? waistCm,
+    int? hipsCm,
   });
 }
 

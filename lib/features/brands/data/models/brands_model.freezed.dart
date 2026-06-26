@@ -18,6 +18,8 @@ mixin _$BrandModel {
   String get name;
   @JsonKey(name: 'logo_url')
   String get logoUrl;
+  @JsonKey(name: 'website_url')
+  String get websiteUrl;
   @JsonKey(name: 'product_count')
   int get productCount;
 
@@ -39,17 +41,20 @@ mixin _$BrandModel {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl) &&
+            (identical(other.websiteUrl, websiteUrl) ||
+                other.websiteUrl == websiteUrl) &&
             (identical(other.productCount, productCount) ||
                 other.productCount == productCount));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, logoUrl, productCount);
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, logoUrl, websiteUrl, productCount);
 
   @override
   String toString() {
-    return 'BrandModel(id: $id, name: $name, logoUrl: $logoUrl, productCount: $productCount)';
+    return 'BrandModel(id: $id, name: $name, logoUrl: $logoUrl, websiteUrl: $websiteUrl, productCount: $productCount)';
   }
 }
 
@@ -63,6 +68,7 @@ abstract mixin class $BrandModelCopyWith<$Res> {
       {int id,
       String name,
       @JsonKey(name: 'logo_url') String logoUrl,
+      @JsonKey(name: 'website_url') String websiteUrl,
       @JsonKey(name: 'product_count') int productCount});
 }
 
@@ -81,6 +87,7 @@ class _$BrandModelCopyWithImpl<$Res> implements $BrandModelCopyWith<$Res> {
     Object? id = null,
     Object? name = null,
     Object? logoUrl = null,
+    Object? websiteUrl = null,
     Object? productCount = null,
   }) {
     return _then(_self.copyWith(
@@ -95,6 +102,10 @@ class _$BrandModelCopyWithImpl<$Res> implements $BrandModelCopyWith<$Res> {
       logoUrl: null == logoUrl
           ? _self.logoUrl
           : logoUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      websiteUrl: null == websiteUrl
+          ? _self.websiteUrl
+          : websiteUrl // ignore: cast_nullable_to_non_nullable
               as String,
       productCount: null == productCount
           ? _self.productCount
@@ -199,6 +210,7 @@ extension BrandModelPatterns on BrandModel {
             int id,
             String name,
             @JsonKey(name: 'logo_url') String logoUrl,
+            @JsonKey(name: 'website_url') String websiteUrl,
             @JsonKey(name: 'product_count') int productCount)?
         $default, {
     required TResult orElse(),
@@ -206,8 +218,8 @@ extension BrandModelPatterns on BrandModel {
     final _that = this;
     switch (_that) {
       case _BrandModel() when $default != null:
-        return $default(
-            _that.id, _that.name, _that.logoUrl, _that.productCount);
+        return $default(_that.id, _that.name, _that.logoUrl, _that.websiteUrl,
+            _that.productCount);
       case _:
         return orElse();
     }
@@ -232,14 +244,15 @@ extension BrandModelPatterns on BrandModel {
             int id,
             String name,
             @JsonKey(name: 'logo_url') String logoUrl,
+            @JsonKey(name: 'website_url') String websiteUrl,
             @JsonKey(name: 'product_count') int productCount)
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _BrandModel():
-        return $default(
-            _that.id, _that.name, _that.logoUrl, _that.productCount);
+        return $default(_that.id, _that.name, _that.logoUrl, _that.websiteUrl,
+            _that.productCount);
     }
   }
 
@@ -261,14 +274,15 @@ extension BrandModelPatterns on BrandModel {
             int id,
             String name,
             @JsonKey(name: 'logo_url') String logoUrl,
+            @JsonKey(name: 'website_url') String websiteUrl,
             @JsonKey(name: 'product_count') int productCount)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
       case _BrandModel() when $default != null:
-        return $default(
-            _that.id, _that.name, _that.logoUrl, _that.productCount);
+        return $default(_that.id, _that.name, _that.logoUrl, _that.websiteUrl,
+            _that.productCount);
       case _:
         return null;
     }
@@ -282,6 +296,7 @@ class _BrandModel implements BrandModel {
       {required this.id,
       required this.name,
       @JsonKey(name: 'logo_url') required this.logoUrl,
+      @JsonKey(name: 'website_url') this.websiteUrl = '',
       @JsonKey(name: 'product_count') this.productCount = 0});
   factory _BrandModel.fromJson(Map<String, dynamic> json) =>
       _$BrandModelFromJson(json);
@@ -293,6 +308,9 @@ class _BrandModel implements BrandModel {
   @override
   @JsonKey(name: 'logo_url')
   final String logoUrl;
+  @override
+  @JsonKey(name: 'website_url')
+  final String websiteUrl;
   @override
   @JsonKey(name: 'product_count')
   final int productCount;
@@ -320,17 +338,20 @@ class _BrandModel implements BrandModel {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl) &&
+            (identical(other.websiteUrl, websiteUrl) ||
+                other.websiteUrl == websiteUrl) &&
             (identical(other.productCount, productCount) ||
                 other.productCount == productCount));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, logoUrl, productCount);
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, logoUrl, websiteUrl, productCount);
 
   @override
   String toString() {
-    return 'BrandModel(id: $id, name: $name, logoUrl: $logoUrl, productCount: $productCount)';
+    return 'BrandModel(id: $id, name: $name, logoUrl: $logoUrl, websiteUrl: $websiteUrl, productCount: $productCount)';
   }
 }
 
@@ -346,6 +367,7 @@ abstract mixin class _$BrandModelCopyWith<$Res>
       {int id,
       String name,
       @JsonKey(name: 'logo_url') String logoUrl,
+      @JsonKey(name: 'website_url') String websiteUrl,
       @JsonKey(name: 'product_count') int productCount});
 }
 
@@ -364,6 +386,7 @@ class __$BrandModelCopyWithImpl<$Res> implements _$BrandModelCopyWith<$Res> {
     Object? id = null,
     Object? name = null,
     Object? logoUrl = null,
+    Object? websiteUrl = null,
     Object? productCount = null,
   }) {
     return _then(_BrandModel(
@@ -378,6 +401,10 @@ class __$BrandModelCopyWithImpl<$Res> implements _$BrandModelCopyWith<$Res> {
       logoUrl: null == logoUrl
           ? _self.logoUrl
           : logoUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      websiteUrl: null == websiteUrl
+          ? _self.websiteUrl
+          : websiteUrl // ignore: cast_nullable_to_non_nullable
               as String,
       productCount: null == productCount
           ? _self.productCount

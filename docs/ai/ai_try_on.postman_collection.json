@@ -1,0 +1,884 @@
+{
+  "info": {
+    "name": "AI Try-On Backend",
+    "_postman_id": "ai-try-on-backend-v1",
+    "description": "# AI Try-On Backend API\n\n## Genel Bilgiler\n\n**Base URL:** `http://localhost:8000/api/v1`\n\n**Authentication:** JWT Bearer Token\n\n### Kimlik Doğrulama\n1. `/auth/google/` veya `/auth/apple/` endpoint'lerinden giriş yap\n2. Response'daki `access` tokenı `access_token` collection variable'ına kaydet\n3. Diğer tüm isteklerde otomatik olarak `Authorization: Bearer {{access_token}}` header'ı eklenir\n\n### Standard Response Formatı\n```json\n{\n  \"success\": true,\n  \"data\": { ... },\n  \"message\": null\n}\n```\n\n### Pagination\nSayfalı endpoint'lerde query param olarak `page` ve `page_size` (max 100) kullanılır.\n\n### Status Kodları\n- `200` OK\n- `201` Created\n- `202` Accepted (async işlemler)\n- `400` Bad Request\n- `401` Unauthorized\n- `404` Not Found",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Kimlik doğrulama ve kullanıcı profili endpoint'leri.\n\nGiriş yapıldığında dönen `access` ve `refresh` token'lar collection variable'larına otomatik kaydedilir.",
+      "item": [
+        {
+          "name": "Google Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data) {",
+                  "  pm.collectionVariables.set('access_token', res.data.access);",
+                  "  pm.collectionVariables.set('refresh_token', res.data.refresh);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/google/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"<google_id_token>\"\n}"
+            },
+            "description": "Google OAuth ID token ile giriş yap.\n\n**token:** Google'dan alınan ID token (Firebase veya Google Sign-In SDK'sından)\n\nBaşarılı girişte JWT `access` ve `refresh` token döner. Test script'i bu token'ları otomatik olarak collection variable'larına kaydeder."
+          },
+          "response": [
+            {
+              "name": "Başarılı Giriş (201)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": "{{base_url}}/auth/google/",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"token\": \"<google_id_token>\"\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"access\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MDAwMDAwMDB9.abc123\",\n    \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MDAwMDAwMDB9.def456\",\n    \"user\": {\n      \"id\": 1,\n      \"email\": \"kullanici@gmail.com\",\n      \"display_name\": \"Emre Yılmaz\",\n      \"photo_url\": \"https://lh3.googleusercontent.com/a/photo.jpg\",\n      \"height_cm\": null,\n      \"weight_kg\": null,\n      \"chest_cm\": null,\n      \"waist_cm\": null,\n      \"hips_cm\": null\n    }\n  },\n  \"message\": null\n}"
+            },
+            {
+              "name": "Geçersiz Token (400)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": "{{base_url}}/auth/google/",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"token\": \"gecersiz_token\"\n}"
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"data\": null,\n  \"message\": \"Geçersiz Google token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Apple Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data) {",
+                  "  pm.collectionVariables.set('access_token', res.data.access);",
+                  "  pm.collectionVariables.set('refresh_token', res.data.refresh);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/apple/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"<apple_identity_token>\",\n  \"display_name\": \"Emre\"\n}"
+            },
+            "description": "Apple Sign In identity token ile giriş yap.\n\n**token:** Apple'dan alınan identity token\n**display_name:** (opsiyonel) Kullanıcı adı — sadece ilk girişte Apple'dan gelir, sonraki girişlerde gönderilmez\n\nBaşarılı girişte JWT `access` ve `refresh` token döner."
+          },
+          "response": [
+            {
+              "name": "Başarılı Giriş (201)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": "{{base_url}}/auth/apple/",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"token\": \"<apple_identity_token>\",\n  \"display_name\": \"Emre\"\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"access\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE3MDAwMDAwMDB9.abc123\",\n    \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE3MDAwMDAwMDB9.def456\",\n    \"user\": {\n      \"id\": 2,\n      \"email\": \"kullanici@privaterelay.appleid.com\",\n      \"display_name\": \"Emre\",\n      \"photo_url\": null,\n      \"height_cm\": null,\n      \"weight_kg\": null,\n      \"chest_cm\": null,\n      \"waist_cm\": null,\n      \"hips_cm\": null\n    }\n  },\n  \"message\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Token Yenile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.access) pm.collectionVariables.set('access_token', res.access);",
+                  "if (res.refresh) pm.collectionVariables.set('refresh_token', res.refresh);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/refresh/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "description": "Access token süresi dolduğunda yeni token almak için kullanılır.\n\n**refresh:** Collection variable'dan otomatik alınır. Access token genellikle 5 dakika, refresh token 7 gün geçerlidir.\n\nBaşarılı response'da yeni `access` token döner, test script collection variable'ı günceller."
+          },
+          "response": [
+            {
+              "name": "Başarılı Token Yenileme (200)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": "{{base_url}}/auth/refresh/",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"access\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MDAwMDAwMDB9.newtoken\",\n  \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MDAwMDAwMDB9.newrefresh\"\n}"
+            },
+            {
+              "name": "Geçersiz/Süresi Dolmuş Refresh Token (401)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": "{{base_url}}/auth/refresh/",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refresh\": \"gecersiz_token\"\n}"
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"detail\": \"Token is invalid or expired\",\n  \"code\": \"token_not_valid\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Profil Bilgisi (Me)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": "{{base_url}}/auth/me/",
+            "description": "Giriş yapmış kullanıcının profil bilgilerini döner.\n\nÖlçü alanları (`height_cm`, `weight_kg` vb.) kullanıcı henüz girmemişse `null` döner."
+          },
+          "response": [
+            {
+              "name": "Başarılı (200)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": "{{base_url}}/auth/me/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1,\n    \"email\": \"kullanici@gmail.com\",\n    \"display_name\": \"Emre Yılmaz\",\n    \"photo_url\": \"https://lh3.googleusercontent.com/a/photo.jpg\",\n    \"height_cm\": 175,\n    \"weight_kg\": 75,\n    \"chest_cm\": 95,\n    \"waist_cm\": 82,\n    \"hips_cm\": 98\n  },\n  \"message\": null\n}"
+            },
+            {
+              "name": "Yetkisiz (401)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{base_url}}/auth/me/"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"detail\": \"Authentication credentials were not provided.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Ölçüleri Güncelle",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/auth/me/measurements/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"height_cm\": 175,\n  \"weight_kg\": 75,\n  \"chest_cm\": 95,\n  \"waist_cm\": 82,\n  \"hips_cm\": 98\n}"
+            },
+            "description": "Kullanıcının vücut ölçülerini günceller. Tüm alanlar opsiyoneldir, sadece değiştirmek istediğin alanları gönder.\n\n**Geçerli aralıklar:**\n- `height_cm`: 50–280\n- `weight_kg`: 20–500\n- `chest_cm`: 40–200\n- `waist_cm`: 30–200\n- `hips_cm`: 40–200\n\nBu bilgiler try-on özelliği ve beden önerileri için kullanılır."
+          },
+          "response": [
+            {
+              "name": "Başarılı Güncelleme (200)",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": "{{base_url}}/auth/me/measurements/",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"height_cm\": 175,\n  \"weight_kg\": 75\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1,\n    \"email\": \"kullanici@gmail.com\",\n    \"display_name\": \"Emre Yılmaz\",\n    \"photo_url\": \"https://lh3.googleusercontent.com/a/photo.jpg\",\n    \"height_cm\": 175,\n    \"weight_kg\": 75,\n    \"chest_cm\": 95,\n    \"waist_cm\": 82,\n    \"hips_cm\": 98\n  },\n  \"message\": null\n}"
+            },
+            {
+              "name": "Geçersiz Değer (400)",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": "{{base_url}}/auth/me/measurements/",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"height_cm\": 999\n}"
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"data\": null,\n  \"message\": \"height_cm: Ensure this value is less than or equal to 280.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "description": "Ürün ve marka listeleme, beğenme ve kaydetme endpoint'leri.",
+      "item": [
+        {
+          "name": "Ürün Listesi",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/products/?page=1&page_size=20",
+              "host": ["{{base_url}}"],
+              "path": ["products", ""],
+              "query": [
+                { "key": "page", "value": "1", "description": "Sayfa numarası" },
+                { "key": "page_size", "value": "20", "description": "Sayfa başı ürün sayısı (max 100)" }
+              ]
+            },
+            "description": "Tüm ürünleri sayfalı olarak listeler.\n\n`is_liked` ve `is_saved` alanları giriş yapan kullanıcıya göre değişir."
+          },
+          "response": [
+            {
+              "name": "Başarılı (200)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/products/?page=1",
+                  "host": ["{{base_url}}"],
+                  "path": ["products", ""],
+                  "query": [{ "key": "page", "value": "1" }]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"count\": 150,\n  \"next\": \"http://localhost:8000/api/v1/products/?page=2\",\n  \"previous\": null,\n  \"results\": [\n    {\n      \"id\": 1,\n      \"name\": \"Slim Fit Gömlek\",\n      \"brand_name\": \"Mango\",\n      \"price\": \"299.99\",\n      \"image_url\": \"https://cdn.example.com/products/gomlek.jpg\",\n      \"category\": \"shirt\",\n      \"like_count\": 42,\n      \"save_count\": 18,\n      \"is_liked\": false,\n      \"is_saved\": true\n    },\n    {\n      \"id\": 2,\n      \"name\": \"Yüksek Bel Jean\",\n      \"brand_name\": \"Zara\",\n      \"price\": \"549.00\",\n      \"image_url\": \"https://cdn.example.com/products/jean.jpg\",\n      \"category\": \"pants\",\n      \"like_count\": 87,\n      \"save_count\": 34,\n      \"is_liked\": true,\n      \"is_saved\": false\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Ürün Detay",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": "{{base_url}}/products/1/",
+            "description": "Belirtilen ID'ye sahip ürünün detaylarını döner.\n\nListe endpoint'ine kıyasla `brand` objesi daha detaylıdır (logo, website dahil)."
+          },
+          "response": [
+            {
+              "name": "Başarılı (200)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": "{{base_url}}/products/1/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": 1,\n  \"name\": \"Slim Fit Gömlek\",\n  \"brand\": {\n    \"id\": 5,\n    \"name\": \"Mango\",\n    \"logo_url\": \"https://cdn.example.com/brands/mango-logo.png\",\n    \"website_url\": \"https://shop.mango.com\"\n  },\n  \"price\": \"299.99\",\n  \"image_url\": \"https://cdn.example.com/products/gomlek.jpg\",\n  \"product_url\": \"https://shop.mango.com/tr/erkek/gomlek/slim-fit-gomlek_12345.html\",\n  \"category\": \"shirt\",\n  \"like_count\": 42,\n  \"save_count\": 18,\n  \"is_liked\": false,\n  \"is_saved\": true\n}"
+            },
+            {
+              "name": "Ürün Bulunamadı (404)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": "{{base_url}}/products/9999/"
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"detail\": \"No Product matches the given query.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Marka Listesi",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/products/brands/?page=1",
+              "host": ["{{base_url}}"],
+              "path": ["products", "brands", ""],
+              "query": [{ "key": "page", "value": "1" }]
+            },
+            "description": "Tüm markaları sayfalı olarak listeler."
+          },
+          "response": [
+            {
+              "name": "Başarılı (200)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": "{{base_url}}/products/brands/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"count\": 25,\n  \"next\": null,\n  \"previous\": null,\n  \"results\": [\n    {\n      \"id\": 1,\n      \"name\": \"Zara\",\n      \"logo_url\": \"https://cdn.example.com/brands/zara-logo.png\",\n      \"website_url\": \"https://www.zara.com/tr\"\n    },\n    {\n      \"id\": 2,\n      \"name\": \"H&M\",\n      \"logo_url\": \"https://cdn.example.com/brands/hm-logo.png\",\n      \"website_url\": \"https://www2.hm.com/tr_tr\"\n    },\n    {\n      \"id\": 3,\n      \"name\": \"Mango\",\n      \"logo_url\": \"https://cdn.example.com/brands/mango-logo.png\",\n      \"website_url\": \"https://shop.mango.com\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Markaya Göre Ürünler",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/products/brands/1/products/?page=1",
+              "host": ["{{base_url}}"],
+              "path": ["products", "brands", "1", "products", ""],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "category", "value": "", "description": "Kategori filtresi (opsiyonel)", "disabled": true }
+              ]
+            },
+            "description": "Belirtilen markaya ait ürünleri sayfalı olarak listeler.\n\n**category** query parametresiyle kategori filtresi uygulanabilir."
+          },
+          "response": [
+            {
+              "name": "Başarılı (200)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": "{{base_url}}/products/brands/1/products/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"count\": 48,\n  \"next\": \"http://localhost:8000/api/v1/products/brands/1/products/?page=2\",\n  \"previous\": null,\n  \"results\": [\n    {\n      \"id\": 5,\n      \"name\": \"Yüksek Bel Pantolon\",\n      \"brand_name\": \"Zara\",\n      \"price\": \"449.90\",\n      \"image_url\": \"https://cdn.example.com/products/pantolon.jpg\",\n      \"category\": \"pants\",\n      \"like_count\": 120,\n      \"save_count\": 55,\n      \"is_liked\": false,\n      \"is_saved\": false\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Beğen / Beğeniyi Kaldır",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/products/like/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": 1\n}"
+            },
+            "description": "Ürünü beğen veya beğeniyi geri al (toggle).\n\nKullanıcı daha önce beğenmişse beğeni kaldırılır, beğenmemişse eklenir. Response'daki `liked` alanı işlem sonrası güncel durumu gösterir.\n\nBeğenme işlemi recommendation cache'ini de invalidate eder."
+          },
+          "response": [
+            {
+              "name": "Beğenildi (200)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": "{{base_url}}/products/like/",
+                "body": { "mode": "raw", "raw": "{\n  \"product_id\": 1\n}" }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"liked\": true\n  },\n  \"message\": \"Ürün beğenildi.\"\n}"
+            },
+            {
+              "name": "Beğeni Kaldırıldı (200)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": "{{base_url}}/products/like/",
+                "body": { "mode": "raw", "raw": "{\n  \"product_id\": 1\n}" }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"liked\": false\n  },\n  \"message\": \"Beğeni kaldırıldı.\"\n}"
+            },
+            {
+              "name": "Ürün Bulunamadı (404)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": "{{base_url}}/products/like/",
+                "body": { "mode": "raw", "raw": "{\n  \"product_id\": 9999\n}" }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"data\": null,\n  \"message\": \"Ürün bulunamadı.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Kaydet / Kaydı Kaldır",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/products/save/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": 1,\n  \"collection\": \"Favoriler\"\n}"
+            },
+            "description": "Ürünü kaydet veya kaydı geri al (toggle).\n\n**collection:** (opsiyonel) Ürünü hangi koleksiyona kaydedeceğini belirtir. Boş bırakılabilir.\n\nKullanıcı aynı ürünü zaten kaydetmişse kayıt silinir. Kaydetme işlemi recommendation cache'ini de invalidate eder."
+          },
+          "response": [
+            {
+              "name": "Kaydedildi (200)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": "{{base_url}}/products/save/",
+                "body": { "mode": "raw", "raw": "{\n  \"product_id\": 1,\n  \"collection\": \"Favoriler\"\n}" }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"saved\": true\n  },\n  \"message\": \"Ürün kaydedildi.\"\n}"
+            },
+            {
+              "name": "Kayıt Kaldırıldı (200)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": "{{base_url}}/products/save/",
+                "body": { "mode": "raw", "raw": "{\n  \"product_id\": 1\n}" }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"saved\": false\n  },\n  \"message\": \"Kayıt kaldırıldı.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Kaydettiğim Ürünler",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/products/saved/?page=1",
+              "host": ["{{base_url}}"],
+              "path": ["products", "saved", ""],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "collection", "value": "Favoriler", "description": "Koleksiyon adına göre filtrele (opsiyonel)", "disabled": true }
+              ]
+            },
+            "description": "Kullanıcının kaydettiği ürünleri listeler.\n\n`collection` query parametresiyle belirli bir koleksiyona göre filtreleme yapılabilir."
+          },
+          "response": [
+            {
+              "name": "Başarılı (200)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": "{{base_url}}/products/saved/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"count\": 3,\n  \"next\": null,\n  \"previous\": null,\n  \"results\": [\n    {\n      \"id\": 1,\n      \"name\": \"Slim Fit Gömlek\",\n      \"brand_name\": \"Mango\",\n      \"price\": \"299.99\",\n      \"image_url\": \"https://cdn.example.com/products/gomlek.jpg\",\n      \"category\": \"shirt\",\n      \"like_count\": 42,\n      \"save_count\": 18,\n      \"is_liked\": false,\n      \"is_saved\": true\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Feed",
+      "description": "Kullanıcıya özel ana akış. Öneri algoritması entegre edilmiştir; yeni kullanıcılarda yeni/popüler ürünler, etkileşim geçmişi olanlarda kişiselleştirilmiş feed gösterilir.",
+      "item": [
+        {
+          "name": "Ana Feed",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/feed/?page=1&page_size=20",
+              "host": ["{{base_url}}"],
+              "path": ["feed", ""],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "20", "description": "Sayfa başı ürün sayısı (max 100)" }
+              ]
+            },
+            "description": "Kullanıcının ana akışını döner.\n\nAlgoritma:\n- Beğeni geçmişi, kaydetme geçmişi ve görüntüleme geçmişi analiz edilir\n- Beğeni 3x, kaydetme 2x, görüntüleme 1x ağırlığıyla kullanıcı profili oluşturulur\n- Benzer kategori ve markalardan ürünler önerilir\n- Cache kullanılır (beğenme/kaydetme sonrası invalidate edilir)"
+          },
+          "response": [
+            {
+              "name": "Başarılı - Kişiselleştirilmiş Feed (200)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/feed/?page=1",
+                  "host": ["{{base_url}}"],
+                  "path": ["feed", ""],
+                  "query": [{ "key": "page", "value": "1" }]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"count\": 80,\n  \"next\": \"http://localhost:8000/api/v1/feed/?page=2\",\n  \"previous\": null,\n  \"results\": [\n    {\n      \"id\": 23,\n      \"name\": \"Oversize Trençkot\",\n      \"brand_name\": \"Zara\",\n      \"price\": \"899.90\",\n      \"image_url\": \"https://cdn.example.com/products/trencot.jpg\",\n      \"category\": \"coat\",\n      \"like_count\": 210,\n      \"save_count\": 98,\n      \"is_liked\": false,\n      \"is_saved\": false\n    },\n    {\n      \"id\": 7,\n      \"name\": \"Fitilli Kadife Pantolon\",\n      \"brand_name\": \"Mango\",\n      \"price\": \"649.00\",\n      \"image_url\": \"https://cdn.example.com/products/kadife.jpg\",\n      \"category\": \"pants\",\n      \"like_count\": 65,\n      \"save_count\": 30,\n      \"is_liked\": true,\n      \"is_saved\": false\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Feed Yenile",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": "{{base_url}}/feed/refresh/",
+            "description": "Feed cache'ini temizler.\n\nKullanıcı pull-to-refresh yaptığında bu endpoint çağrılır. Sonrasında `GET /feed/` isteği atılınca fresh data gelir."
+          },
+          "response": [
+            {
+              "name": "Başarılı (200)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": "{{base_url}}/feed/refresh/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": null,\n  \"message\": \"Feed yenilendi.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Recommendations",
+      "description": "İçerik tabanlı filtreleme ile oluşturulan kişiselleştirilmiş ürün önerileri.\n\nKullanıcının beğeni (3x), kaydetme (2x) ve görüntüleme (1x) geçmişine göre kategori + marka skoru hesaplanır ve en iyi eşleşen ürünler döner.",
+      "item": [
+        {
+          "name": "Önerilen Ürünler",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": {
+              "raw": "{{base_url}}/recommendations/?page=1&page_size=20",
+              "host": ["{{base_url}}"],
+              "path": ["recommendations", ""],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "20", "description": "Sayfa başı ürün sayısı (max 100)" }
+              ]
+            },
+            "description": "Kullanıcıya özel ürün önerilerini döner.\n\n**Algoritma detayı:**\n- Beğenilen ürünler: 3 puan\n- Kaydedilen ürünler: 2 puan\n- Görüntülenen ürünler: 1 puan\n- Bu puanlara göre kategori ve marka tercihleri belirlenir\n- Tercih edilen kategori/markalardan daha önce etkileşime girilmemiş ürünler sıralanır\n\n**Cache:** Sonuçlar cache'lenir. Beğenme ve kaydetme işlemlerinden sonra otomatik invalidate edilir."
+          },
+          "response": [
+            {
+              "name": "Başarılı - Öneriler (200)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/recommendations/?page=1",
+                  "host": ["{{base_url}}"],
+                  "path": ["recommendations", ""],
+                  "query": [{ "key": "page", "value": "1" }]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"count\": 45,\n  \"next\": \"http://localhost:8000/api/v1/recommendations/?page=2\",\n  \"previous\": null,\n  \"results\": [\n    {\n      \"id\": 41,\n      \"name\": \"Keten Bol Gömlek\",\n      \"brand_name\": \"Mango\",\n      \"price\": \"349.90\",\n      \"image_url\": \"https://cdn.example.com/products/keten-gomlek.jpg\",\n      \"category\": \"shirt\",\n      \"like_count\": 88,\n      \"save_count\": 41,\n      \"is_liked\": false,\n      \"is_saved\": false\n    },\n    {\n      \"id\": 56,\n      \"name\": \"Bermuda Şort\",\n      \"brand_name\": \"Zara\",\n      \"price\": \"299.90\",\n      \"image_url\": \"https://cdn.example.com/products/sort.jpg\",\n      \"category\": \"shorts\",\n      \"like_count\": 33,\n      \"save_count\": 12,\n      \"is_liked\": false,\n      \"is_saved\": false\n    }\n  ]\n}"
+            },
+            {
+              "name": "Yeni Kullanıcı - Geçmiş Yok (200)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/recommendations/?page=1",
+                  "host": ["{{base_url}}"],
+                  "path": ["recommendations", ""],
+                  "query": [{ "key": "page", "value": "1" }]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"count\": 20,\n  \"next\": null,\n  \"previous\": null,\n  \"results\": [\n    {\n      \"id\": 1,\n      \"name\": \"Slim Fit Gömlek\",\n      \"brand_name\": \"Mango\",\n      \"price\": \"299.99\",\n      \"image_url\": \"https://cdn.example.com/products/gomlek.jpg\",\n      \"category\": \"shirt\",\n      \"like_count\": 42,\n      \"save_count\": 18,\n      \"is_liked\": false,\n      \"is_saved\": false\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Try-On",
+      "description": "AI sanal deneme (virtual try-on) endpoint'leri.\n\nİşlem asenkrondur: önce `create` ile iş başlatılır (202 döner), ardından `status` ile sonuç takip edilir.\n\n**Status akışı:** `pending` → `processing` → `completed` / `failed`",
+      "item": [
+        {
+          "name": "Try-On Başlat",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": "{{base_url}}/tryon/create/",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "product_id",
+                  "value": "1",
+                  "type": "text",
+                  "description": "Denenecek ürünün ID'si"
+                },
+                {
+                  "key": "user_photo",
+                  "type": "file",
+                  "src": "",
+                  "description": "Kullanıcının fotoğrafı (JPG/PNG, max 10MB)"
+                }
+              ]
+            },
+            "description": "AI virtual try-on işlemini başlatır.\n\n**product_id:** Denenecek ürünün ID'si\n**user_photo:** Kullanıcının tam vücut fotoğrafı (JPG veya PNG önerilir)\n\nİstek `202 Accepted` ile döner — işlem arka planda Celery task olarak çalışır. Sonucu `GET /tryon/{id}/status/` ile takip et.\n\n**Content-Type:** `multipart/form-data` (Postman'de otomatik set edilir)"
+          },
+          "response": [
+            {
+              "name": "Başlatıldı (202 Accepted)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": "{{base_url}}/tryon/create/",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "product_id", "value": "1", "type": "text" },
+                    { "key": "user_photo", "type": "file", "src": "" }
+                  ]
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 42,\n    \"product_id\": 1,\n    \"product_name\": \"Slim Fit Gömlek\",\n    \"product_image_url\": \"https://cdn.example.com/products/gomlek.jpg\",\n    \"user_photo_url\": \"https://cdn.example.com/tryon/uploads/user_photo_42.jpg\",\n    \"result_image_url\": null,\n    \"status\": \"pending\",\n    \"error_message\": null,\n    \"created_at\": \"2026-03-19T10:30:00Z\"\n  },\n  \"message\": null\n}"
+            },
+            {
+              "name": "Ürün Bulunamadı (404)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": "{{base_url}}/tryon/create/",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "product_id", "value": "9999", "type": "text" },
+                    { "key": "user_photo", "type": "file", "src": "" }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"data\": null,\n  \"message\": \"Ürün bulunamadı.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Try-On Durum Sorgula",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": "{{base_url}}/tryon/42/status/",
+            "description": "Belirtilen try-on işleminin güncel durumunu sorgular.\n\n**Status değerleri:**\n- `pending` — Kuyrukta bekliyor\n- `processing` — AI işlemi sürüyor\n- `completed` — Tamamlandı, `result_image_url` dolu\n- `failed` — Hata oluştu, `error_message` dolu\n\nFrontend polling ile ~2 saniyede bir sorgulamalıdır."
+          },
+          "response": [
+            {
+              "name": "İşlemde (200 - processing)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": "{{base_url}}/tryon/42/status/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 42,\n    \"product_id\": 1,\n    \"product_name\": \"Slim Fit Gömlek\",\n    \"product_image_url\": \"https://cdn.example.com/products/gomlek.jpg\",\n    \"user_photo_url\": \"https://cdn.example.com/tryon/uploads/user_photo_42.jpg\",\n    \"result_image_url\": null,\n    \"status\": \"processing\",\n    \"error_message\": null,\n    \"created_at\": \"2026-03-19T10:30:00Z\"\n  },\n  \"message\": null\n}"
+            },
+            {
+              "name": "Tamamlandı (200 - completed)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": "{{base_url}}/tryon/42/status/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 42,\n    \"product_id\": 1,\n    \"product_name\": \"Slim Fit Gömlek\",\n    \"product_image_url\": \"https://cdn.example.com/products/gomlek.jpg\",\n    \"user_photo_url\": \"https://cdn.example.com/tryon/uploads/user_photo_42.jpg\",\n    \"result_image_url\": \"https://cdn.example.com/tryon/results/result_42.jpg\",\n    \"status\": \"completed\",\n    \"error_message\": null,\n    \"created_at\": \"2026-03-19T10:30:00Z\"\n  },\n  \"message\": null\n}"
+            },
+            {
+              "name": "Başarısız (200 - failed)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": "{{base_url}}/tryon/42/status/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 42,\n    \"product_id\": 1,\n    \"product_name\": \"Slim Fit Gömlek\",\n    \"product_image_url\": \"https://cdn.example.com/products/gomlek.jpg\",\n    \"user_photo_url\": \"https://cdn.example.com/tryon/uploads/user_photo_42.jpg\",\n    \"result_image_url\": null,\n    \"status\": \"failed\",\n    \"error_message\": \"AI servisi yanıt vermedi. Lütfen tekrar deneyin.\",\n    \"created_at\": \"2026-03-19T10:30:00Z\"\n  },\n  \"message\": null\n}"
+            },
+            {
+              "name": "Kayıt Bulunamadı (404)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": "{{base_url}}/tryon/9999/status/"
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"data\": null,\n  \"message\": \"Kayıt bulunamadı.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Try-On Geçmişi",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+            "url": "{{base_url}}/tryon/",
+            "description": "Kullanıcının tüm try-on geçmişini listeler. Tüm status'lar dahildir (pending, processing, completed, failed)."
+          },
+          "response": [
+            {
+              "name": "Başarılı (200)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+                "url": "{{base_url}}/tryon/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 42,\n      \"product_id\": 1,\n      \"product_name\": \"Slim Fit Gömlek\",\n      \"product_image_url\": \"https://cdn.example.com/products/gomlek.jpg\",\n      \"user_photo_url\": \"https://cdn.example.com/tryon/uploads/user_photo_42.jpg\",\n      \"result_image_url\": \"https://cdn.example.com/tryon/results/result_42.jpg\",\n      \"status\": \"completed\",\n      \"error_message\": null,\n      \"created_at\": \"2026-03-19T10:30:00Z\"\n    },\n    {\n      \"id\": 38,\n      \"product_id\": 7,\n      \"product_name\": \"Fitilli Kadife Pantolon\",\n      \"product_image_url\": \"https://cdn.example.com/products/kadife.jpg\",\n      \"user_photo_url\": \"https://cdn.example.com/tryon/uploads/user_photo_38.jpg\",\n      \"result_image_url\": null,\n      \"status\": \"failed\",\n      \"error_message\": \"Fotoğraf kalitesi yetersiz.\",\n      \"created_at\": \"2026-03-18T14:15:00Z\"\n    }\n  ],\n  \"message\": null\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

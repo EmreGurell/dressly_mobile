@@ -20,11 +20,25 @@
   static const like = '/products/like/';
   static const save = '/products/save/';
   static const saved = '/products/saved/';
+  static const products = '/products/';
   static const brands = '/products/brands/';
   static String brandProducts(int id) => '/products/brands/$id/products/';
+  static String productDetail(int id) => '/products/$id/';
 
   // Try-On
   static const tryon = '/tryon/';
+  static const tryonCreate = '/tryon/create/';
+  static String tryonStatus(int id) => '/tryon/$id/status/';
+
+  // Notifications
+  static const deviceToken = '/notifications/device-token/';
+  static const notifications = '/notifications/';
+  static const notificationsUnreadCount = '/notifications/unread-count/';
+  static String notificationRead(int id) => '/notifications/$id/read/';
+  static const notificationsReadAll = '/notifications/read-all/';
+
+  // Recommendations
+  static const recommendations = '/recommendations/';
 
   // User
   static const me = '/auth/me/';

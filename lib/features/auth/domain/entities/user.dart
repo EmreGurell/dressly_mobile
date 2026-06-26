@@ -9,12 +9,13 @@ sealed class User with _$User {
     required String email,
     String? name,
     String? avatar,
-    double? heightCm,
-    double? weightKg,
-    double? chestCm,
-    double? waistCm,
-    double? hipsCm,
-    String? clothingSize,
+    String? gender,
+    @Default(false) bool isOnboarded,
+    int? heightCm,
+    int? weightKg,
+    int? chestCm,
+    int? waistCm,
+    int? hipsCm,
   }) = _User;
 }
 

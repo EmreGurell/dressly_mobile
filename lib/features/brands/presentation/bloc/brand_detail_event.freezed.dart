@@ -54,6 +54,7 @@ extension BrandDetailEventPatterns on BrandDetailEvent {
     TResult Function(_Load value)? load,
     TResult Function(_SelectCategory value)? selectCategory,
     TResult Function(_LoadMore value)? loadMore,
+    TResult Function(_Search value)? search,
     required TResult orElse(),
   }) {
     final _that = this;
@@ -64,6 +65,8 @@ extension BrandDetailEventPatterns on BrandDetailEvent {
         return selectCategory(_that);
       case _LoadMore() when loadMore != null:
         return loadMore(_that);
+      case _Search() when search != null:
+        return search(_that);
       case _:
         return orElse();
     }
@@ -87,6 +90,7 @@ extension BrandDetailEventPatterns on BrandDetailEvent {
     required TResult Function(_Load value) load,
     required TResult Function(_SelectCategory value) selectCategory,
     required TResult Function(_LoadMore value) loadMore,
+    required TResult Function(_Search value) search,
   }) {
     final _that = this;
     switch (_that) {
@@ -96,6 +100,8 @@ extension BrandDetailEventPatterns on BrandDetailEvent {
         return selectCategory(_that);
       case _LoadMore():
         return loadMore(_that);
+      case _Search():
+        return search(_that);
     }
   }
 
@@ -116,6 +122,7 @@ extension BrandDetailEventPatterns on BrandDetailEvent {
     TResult? Function(_Load value)? load,
     TResult? Function(_SelectCategory value)? selectCategory,
     TResult? Function(_LoadMore value)? loadMore,
+    TResult? Function(_Search value)? search,
   }) {
     final _that = this;
     switch (_that) {
@@ -125,6 +132,8 @@ extension BrandDetailEventPatterns on BrandDetailEvent {
         return selectCategory(_that);
       case _LoadMore() when loadMore != null:
         return loadMore(_that);
+      case _Search() when search != null:
+        return search(_that);
       case _:
         return null;
     }
@@ -147,6 +156,7 @@ extension BrandDetailEventPatterns on BrandDetailEvent {
     TResult Function(Brand brand)? load,
     TResult Function(String? category)? selectCategory,
     TResult Function()? loadMore,
+    TResult Function(String query)? search,
     required TResult orElse(),
   }) {
     final _that = this;
@@ -157,6 +167,8 @@ extension BrandDetailEventPatterns on BrandDetailEvent {
         return selectCategory(_that.category);
       case _LoadMore() when loadMore != null:
         return loadMore();
+      case _Search() when search != null:
+        return search(_that.query);
       case _:
         return orElse();
     }
@@ -180,6 +192,7 @@ extension BrandDetailEventPatterns on BrandDetailEvent {
     required TResult Function(Brand brand) load,
     required TResult Function(String? category) selectCategory,
     required TResult Function() loadMore,
+    required TResult Function(String query) search,
   }) {
     final _that = this;
     switch (_that) {
@@ -189,6 +202,8 @@ extension BrandDetailEventPatterns on BrandDetailEvent {
         return selectCategory(_that.category);
       case _LoadMore():
         return loadMore();
+      case _Search():
+        return search(_that.query);
     }
   }
 
@@ -209,6 +224,7 @@ extension BrandDetailEventPatterns on BrandDetailEvent {
     TResult? Function(Brand brand)? load,
     TResult? Function(String? category)? selectCategory,
     TResult? Function()? loadMore,
+    TResult? Function(String query)? search,
   }) {
     final _that = this;
     switch (_that) {
@@ -218,6 +234,8 @@ extension BrandDetailEventPatterns on BrandDetailEvent {
         return selectCategory(_that.category);
       case _LoadMore() when loadMore != null:
         return loadMore();
+      case _Search() when search != null:
+        return search(_that.query);
       case _:
         return null;
     }
@@ -380,6 +398,68 @@ class _LoadMore implements BrandDetailEvent {
   @override
   String toString() {
     return 'BrandDetailEvent.loadMore()';
+  }
+}
+
+/// @nodoc
+
+class _Search implements BrandDetailEvent {
+  const _Search(this.query);
+
+  final String query;
+
+  /// Create a copy of BrandDetailEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$SearchCopyWith<_Search> get copyWith =>
+      __$SearchCopyWithImpl<_Search>(this, _$identity);
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _Search &&
+            (identical(other.query, query) || other.query == query));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, query);
+
+  @override
+  String toString() {
+    return 'BrandDetailEvent.search(query: $query)';
+  }
+}
+
+/// @nodoc
+abstract mixin class _$SearchCopyWith<$Res>
+    implements $BrandDetailEventCopyWith<$Res> {
+  factory _$SearchCopyWith(_Search value, $Res Function(_Search) _then) =
+      __$SearchCopyWithImpl;
+  @useResult
+  $Res call({String query});
+}
+
+/// @nodoc
+class __$SearchCopyWithImpl<$Res> implements _$SearchCopyWith<$Res> {
+  __$SearchCopyWithImpl(this._self, this._then);
+
+  final _Search _self;
+  final $Res Function(_Search) _then;
+
+  /// Create a copy of BrandDetailEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? query = null,
+  }) {
+    return _then(_Search(
+      null == query
+          ? _self.query
+          : query // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 

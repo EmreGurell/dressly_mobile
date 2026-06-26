@@ -1,0 +1,817 @@
+{
+  "baseUrl": "https://api.yourdomain.com",
+  "auth": {
+    "type": "Bearer Token",
+    "header": "Authorization: Bearer <access_token>",
+    "note": "access_token süresi dolunca /api/v1/auth/refresh/ ile yenile. Belirtilmedikçe tüm endpointler auth gerektirir."
+  },
+  "responseFormat": {
+    "description": "Tüm endpointler aynı zarfı döner",
+    "shape": {
+      "success": "boolean — işlem başarılıysa true, hata varsa false",
+      "data": "object | array | null — asıl payload",
+      "message": "string | null — kullanıcıya gösterilecek mesaj (başarı veya hata)"
+    },
+    "example": {
+      "success": true,
+      "data": {},
+      "message": null
+    }
+  },
+  "paginatedResponseFormat": {
+    "description": "Liste dönen endpointlerde sayfalama zarfı",
+    "shape": {
+      "count": "integer — toplam kayıt sayısı",
+      "next": "string | null — sonraki sayfa URL",
+      "previous": "string | null — önceki sayfa URL",
+      "results": "array — asıl veri dizisi"
+    },
+    "queryParams": {
+      "page": "integer — sayfa numarası (default: 1)",
+      "page_size": "integer — sayfa başı kayıt (default: 20, max: 100)"
+    }
+  },
+  "endpoints": {
+    "auth": {
+      "googleLogin": {
+        "method": "POST",
+        "path": "/api/v1/auth/google/",
+        "auth": false,
+        "description": "Google OAuth ile giriş yap veya kayıt ol",
+        "request": {
+          "contentType": "application/json",
+          "body": {
+            "token": {
+              "type": "string",
+              "required": true,
+              "description": "Google ID token (Google Sign-In SDK'dan alınan)"
+            }
+          }
+        },
+        "response": {
+          "200": {
+            "data": {
+              "access": {
+                "type": "string",
+                "description": "JWT access token — API isteklerinde Authorization header'a koy"
+              },
+              "refresh": {
+                "type": "string",
+                "description": "JWT refresh token — access süresi dolunca yenileme için"
+              },
+              "user": {
+                "type": "User",
+                "description": "Kullanıcı objesi (aşağıda User tipine bak)"
+              }
+            }
+          }
+        }
+      },
+      "appleLogin": {
+        "method": "POST",
+        "path": "/api/v1/auth/apple/",
+        "auth": false,
+        "description": "Apple Sign In ile giriş yap veya kayıt ol",
+        "request": {
+          "contentType": "application/json",
+          "body": {
+            "token": {
+              "type": "string",
+              "required": true,
+              "description": "Apple identity token"
+            },
+            "display_name": {
+              "type": "string",
+              "required": false,
+              "default": "",
+              "description": "Kullanıcı adı (Apple sadece ilk girişte verir)"
+            }
+          }
+        },
+        "response": {
+          "200": {
+            "data": {
+              "access": "string",
+              "refresh": "string",
+              "user": "User"
+            }
+          }
+        }
+      },
+      "refreshToken": {
+        "method": "POST",
+        "path": "/api/v1/auth/refresh/",
+        "auth": false,
+        "description": "Access token süresi dolunca yenile",
+        "request": {
+          "contentType": "application/json",
+          "body": {
+            "refresh": {
+              "type": "string",
+              "required": true,
+              "description": "Daha önce alınan refresh token"
+            }
+          }
+        },
+        "response": {
+          "200": {
+            "data": {
+              "access": "string — yeni access token"
+            }
+          }
+        }
+      },
+      "me": {
+        "method": "GET",
+        "path": "/api/v1/auth/me/",
+        "auth": true,
+        "description": "Giriş yapmış kullanıcının profilini getir",
+        "response": {
+          "200": {
+            "data": "User"
+          }
+        }
+      },
+      "updateMeasurements": {
+        "method": "PATCH",
+        "path": "/api/v1/auth/me/measurements/",
+        "auth": true,
+        "description": "Persona kurulumu ve vücut ölçülerini güncelle. Onboarding ekranından ve profil ayarlarından çağrılır. gender set edilince is_onboarded true olur ve feed/ürünler otomatik cinsiyete göre filtrelenmeye başlar. Try-on kalitesini de artırır.",
+        "request": {
+          "contentType": "application/json",
+          "body": {
+            "gender": {
+              "type": "string | null",
+              "required": false,
+              "enum": ["male", "female", "unisex"],
+              "description": "Cinsiyet. Onboarding'de zorunlu tutulması önerilir. Feed ve ürün listesi buna göre filtrelenir. 'unisex' = belirtmek istemiyorum."
+            },
+            "height_cm": {
+              "type": "integer | null",
+              "required": false,
+              "min": 50,
+              "max": 280,
+              "description": "Boy (cm) — try-on kalitesini artırır"
+            },
+            "weight_kg": {
+              "type": "integer | null",
+              "required": false,
+              "min": 20,
+              "max": 500,
+              "description": "Kilo (kg) — try-on kalitesini artırır"
+            },
+            "chest_cm": {
+              "type": "integer | null",
+              "required": false,
+              "min": 40,
+              "max": 200,
+              "description": "Göğüs çevresi (cm)"
+            },
+            "waist_cm": {
+              "type": "integer | null",
+              "required": false,
+              "min": 30,
+              "max": 200,
+              "description": "Bel çevresi (cm)"
+            },
+            "hips_cm": {
+              "type": "integer | null",
+              "required": false,
+              "min": 40,
+              "max": 200,
+              "description": "Kalça çevresi (cm)"
+            }
+          }
+        },
+        "response": {
+          "200": {
+            "data": "User"
+          }
+        }
+      }
+    },
+    "feed": {
+      "getFeed": {
+        "method": "GET",
+        "path": "/api/v1/feed/",
+        "auth": true,
+        "description": "Kullanıcıya özel ürün feed'i (sayfalı). İlk sayfa Redis'ten cache'lenir.",
+        "response": {
+          "200": {
+            "data": "PaginatedResponse<Product>"
+          }
+        }
+      },
+      "refreshFeed": {
+        "method": "POST",
+        "path": "/api/v1/feed/refresh/",
+        "auth": true,
+        "description": "Feed cache'ini temizle, bir sonraki GET'te yeni içerik gelsin",
+        "response": {
+          "200": {
+            "data": null,
+            "message": "Feed yenilendi."
+          }
+        }
+      }
+    },
+    "products": {
+      "listProducts": {
+        "method": "GET",
+        "path": "/api/v1/products/",
+        "auth": true,
+        "description": "Tüm aktif ürünleri listele (sayfalı)",
+        "response": {
+          "200": {
+            "data": "PaginatedResponse<Product>"
+          }
+        }
+      },
+      "getProduct": {
+        "method": "GET",
+        "path": "/api/v1/products/{id}/",
+        "auth": true,
+        "description": "Tek ürün detayı (brand objesi dahil)",
+        "pathParams": {
+          "id": "integer — ürün ID"
+        },
+        "response": {
+          "200": {
+            "data": "ProductDetail"
+          },
+          "404": {
+            "success": false,
+            "message": "Bulunamadı"
+          }
+        }
+      },
+      "listBrands": {
+        "method": "GET",
+        "path": "/api/v1/products/brands/",
+        "auth": true,
+        "description": "Aktif markaları listele (sayfalı)",
+        "response": {
+          "200": {
+            "data": "PaginatedResponse<Brand>"
+          }
+        }
+      },
+      "brandProducts": {
+        "method": "GET",
+        "path": "/api/v1/products/brands/{brand_id}/products/",
+        "auth": true,
+        "description": "Bir markaya ait ürünleri listele, isteğe bağlı kategori filtresi",
+        "pathParams": {
+          "brand_id": "integer — marka ID"
+        },
+        "queryParams": {
+          "category": {
+            "type": "string",
+            "required": false,
+            "enum": ["shirt", "jacket", "pants", "dress", "shoes", "bag", "accessory", "other"],
+            "description": "Kategori filtresi"
+          }
+        },
+        "response": {
+          "200": {
+            "data": "PaginatedResponse<Product>"
+          }
+        }
+      },
+      "likeProduct": {
+        "method": "POST",
+        "path": "/api/v1/products/like/",
+        "auth": true,
+        "description": "Ürünü beğen / beğeniyi kaldır (toggle)",
+        "request": {
+          "contentType": "application/json",
+          "body": {
+            "product_id": {
+              "type": "integer",
+              "required": true
+            }
+          }
+        },
+        "response": {
+          "200": {
+            "data": {
+              "liked": "boolean — true: beğenildi, false: beğeni kaldırıldı"
+            }
+          }
+        }
+      },
+      "saveProduct": {
+        "method": "POST",
+        "path": "/api/v1/products/save/",
+        "auth": true,
+        "description": "Ürünü kaydet / kaydı kaldır (toggle)",
+        "request": {
+          "contentType": "application/json",
+          "body": {
+            "product_id": {
+              "type": "integer",
+              "required": true
+            },
+            "collection": {
+              "type": "string",
+              "required": false,
+              "default": "",
+              "description": "Koleksiyon adı (opsiyonel gruplandırma)"
+            }
+          }
+        },
+        "response": {
+          "200": {
+            "data": {
+              "saved": "boolean — true: kaydedildi, false: kayıt kaldırıldı"
+            }
+          }
+        }
+      },
+      "savedProducts": {
+        "method": "GET",
+        "path": "/api/v1/products/saved/",
+        "auth": true,
+        "description": "Kullanıcının kaydettiği ürünler (sayfalı)",
+        "queryParams": {
+          "collection": {
+            "type": "string",
+            "required": false,
+            "description": "Koleksiyon adına göre filtrele"
+          }
+        },
+        "response": {
+          "200": {
+            "data": "PaginatedResponse<Product>"
+          }
+        }
+      }
+    },
+    "recommendations": {
+      "getRecommendations": {
+        "method": "GET",
+        "path": "/api/v1/recommendations/",
+        "auth": true,
+        "description": "Kullanıcının beğeni/kayıt geçmişine göre öneri ürünler (sayfalı). Cache'lenir.",
+        "response": {
+          "200": {
+            "data": "PaginatedResponse<Product>"
+          }
+        }
+      }
+    },
+    "tryon": {
+      "createTryOn": {
+        "method": "POST",
+        "path": "/api/v1/tryon/create/",
+        "auth": true,
+        "description": "Sanal deneme başlat. Aynı kullanıcı + aynı ürün için tamamlanmış deneme varsa yeni işlem başlatmaz, mevcut sonucu anında döner (200). Yeni işlem başlatılırsa 202 döner ve Celery kuyruğuna alınır.",
+        "request": {
+          "contentType": "multipart/form-data",
+          "body": {
+            "product_id": {
+              "type": "integer",
+              "required": true,
+              "description": "Denenecek ürünün ID'si"
+            },
+            "user_photo": {
+              "type": "file (image/jpeg, image/png, image/webp)",
+              "required": true,
+              "description": "Kullanıcının tam boy fotoğrafı. Kişi net ve dik durmalı, arka plan sade olursa kalite artar."
+            }
+          }
+        },
+        "response": {
+          "200": {
+            "description": "Bu kullanıcı + ürün için daha önce tamamlanmış sonuç var, anında döndü",
+            "data": "TryOn"
+          },
+          "202": {
+            "description": "Yeni deneme oluşturuldu, işlem arka planda sürüyor",
+            "data": "TryOn (status: pending)"
+          },
+          "404": {
+            "description": "Ürün bulunamadı"
+          }
+        },
+        "polling": {
+          "description": "202 gelince status endpoint'ini poll et",
+          "interval": "10 saniye önerilir",
+          "stopWhen": "status === 'completed' veya status === 'failed'"
+        }
+      },
+      "getTryOnStatus": {
+        "method": "GET",
+        "path": "/api/v1/tryon/{tryon_id}/status/",
+        "auth": true,
+        "description": "Deneme durumunu sorgula",
+        "pathParams": {
+          "tryon_id": "integer — createTryOn'dan dönen id"
+        },
+        "response": {
+          "200": {
+            "data": "TryOn"
+          },
+          "404": {
+            "description": "Kayıt bulunamadı veya başka kullanıcıya ait"
+          }
+        }
+      },
+      "listTryOns": {
+        "method": "GET",
+        "path": "/api/v1/tryon/",
+        "auth": true,
+        "description": "Kullanıcının son 20 sanal denemesini listele",
+        "response": {
+          "200": {
+            "data": "TryOn[]"
+          }
+        }
+      }
+    },
+    "notifications": {
+      "registerDeviceToken": {
+        "method": "POST",
+        "path": "/api/v1/notifications/device-token/",
+        "auth": true,
+        "description": "Push bildirim için cihaz token'ını kaydet",
+        "request": {
+          "contentType": "application/json",
+          "body": {
+            "token": {
+              "type": "string",
+              "required": true,
+              "description": "FCM veya APNs token"
+            },
+            "platform": {
+              "type": "string",
+              "required": true,
+              "enum": ["ios", "android"],
+              "description": "Cihaz platformu"
+            }
+          }
+        },
+        "response": {
+          "200": {
+            "data": null,
+            "message": "Token kaydedildi."
+          }
+        }
+      },
+      "removeDeviceToken": {
+        "method": "DELETE",
+        "path": "/api/v1/notifications/device-token/",
+        "auth": true,
+        "description": "Cihaz token'ını devre dışı bırak (çıkış yaparken çağır)",
+        "request": {
+          "contentType": "application/json",
+          "body": {
+            "token": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        "response": {
+          "200": {
+            "data": null
+          }
+        }
+      },
+      "listNotifications": {
+        "method": "GET",
+        "path": "/api/v1/notifications/",
+        "auth": true,
+        "description": "Kullanıcının bildirimlerini listele (sayfalı, en yeniden eskiye)",
+        "response": {
+          "200": {
+            "data": "PaginatedResponse<Notification>"
+          }
+        }
+      },
+      "unreadCount": {
+        "method": "GET",
+        "path": "/api/v1/notifications/unread-count/",
+        "auth": true,
+        "description": "Okunmamış bildirim sayısı (badge için)",
+        "response": {
+          "200": {
+            "data": {
+              "count": "integer"
+            }
+          }
+        }
+      },
+      "markRead": {
+        "method": "POST",
+        "path": "/api/v1/notifications/{notification_id}/read/",
+        "auth": true,
+        "description": "Tek bildirimi okundu olarak işaretle",
+        "pathParams": {
+          "notification_id": "integer"
+        },
+        "response": {
+          "200": {
+            "data": null
+          },
+          "404": {
+            "description": "Bildirim bulunamadı"
+          }
+        }
+      },
+      "markAllRead": {
+        "method": "POST",
+        "path": "/api/v1/notifications/read-all/",
+        "auth": true,
+        "description": "Tüm bildirimleri okundu yap",
+        "response": {
+          "200": {
+            "data": null,
+            "message": "Tüm bildirimler okundu."
+          }
+        }
+      }
+    },
+    "payment": {
+      "subscriptionStatus": {
+        "method": "GET",
+        "path": "/api/v1/payment/subscription/",
+        "auth": true,
+        "description": "Aktif abonelik bilgisini getir. Abonelik yoksa data: null döner.",
+        "response": {
+          "200": {
+            "data": "Subscription | null"
+          }
+        }
+      },
+      "verifySubscription": {
+        "method": "POST",
+        "path": "/api/v1/payment/subscription/verify/",
+        "auth": true,
+        "description": "Satın alınan aboneliği doğrula ve aktifleştir",
+        "request": {
+          "contentType": "application/json",
+          "body": {
+            "platform": {
+              "type": "string",
+              "required": true,
+              "enum": ["google_play", "app_store"]
+            },
+            "product_id": {
+              "type": "string",
+              "required": true,
+              "description": "Store'daki ürün ID (örn: com.app.premium.monthly)"
+            },
+            "period": {
+              "type": "string",
+              "required": true,
+              "enum": ["monthly", "yearly"]
+            },
+            "purchase_token": {
+              "type": "string",
+              "required": "Google Play için zorunlu",
+              "description": "Google Play satın alma token'ı"
+            },
+            "receipt_data": {
+              "type": "string",
+              "required": "App Store için zorunlu",
+              "description": "App Store receipt base64"
+            }
+          }
+        },
+        "response": {
+          "200": {
+            "data": "Subscription",
+            "message": "Abonelik aktifleştirildi."
+          }
+        }
+      },
+      "creditBalance": {
+        "method": "GET",
+        "path": "/api/v1/payment/credits/",
+        "auth": true,
+        "description": "Kullanıcının mevcut kredi bakiyesi",
+        "response": {
+          "200": {
+            "data": {
+              "balance": "integer — mevcut kredi adedi"
+            }
+          }
+        }
+      },
+      "creditTransactions": {
+        "method": "GET",
+        "path": "/api/v1/payment/credits/transactions/",
+        "auth": true,
+        "description": "Kredi işlem geçmişi (sayfalı)",
+        "response": {
+          "200": {
+            "data": "PaginatedResponse<CreditTransaction>"
+          }
+        }
+      },
+      "verifyCreditPurchase": {
+        "method": "POST",
+        "path": "/api/v1/payment/credits/verify/",
+        "auth": true,
+        "description": "Satın alınan kredi paketini doğrula ve bakiyeye ekle",
+        "request": {
+          "contentType": "application/json",
+          "body": {
+            "platform": {
+              "type": "string",
+              "required": true,
+              "enum": ["google_play", "app_store"]
+            },
+            "product_id": {
+              "type": "string",
+              "required": true
+            },
+            "purchase_token": {
+              "type": "string",
+              "required": "Google Play için zorunlu"
+            },
+            "receipt_data": {
+              "type": "string",
+              "required": "App Store için zorunlu"
+            }
+          }
+        },
+        "response": {
+          "200": {
+            "data": {
+              "balance": "integer — güncel kredi bakiyesi"
+            },
+            "message": "X kredi eklendi."
+          }
+        }
+      }
+    }
+  },
+  "types": {
+    "User": {
+      "id": "integer",
+      "email": "string",
+      "display_name": "string (boş olabilir)",
+      "photo_url": "string (URL, boş olabilir)",
+      "gender": "string | null — 'male' | 'female' | 'unisex' | null (henüz girilmemişse null)",
+      "is_onboarded": "boolean — gender dolu ise true, null ise false. Login sonrası bu değere göre onboarding ekranını göster.",
+      "height_cm": "integer | null",
+      "weight_kg": "integer | null",
+      "chest_cm": "integer | null",
+      "waist_cm": "integer | null",
+      "hips_cm": "integer | null"
+    },
+    "Product": {
+      "id": "integer",
+      "name": "string",
+      "brand_name": "string",
+      "price": "string (decimal, örn: '299.99')",
+      "image_url": "string (URL)",
+      "category": "string — 'shirt' | 'jacket' | 'pants' | 'dress' | 'shoes' | 'bag' | 'accessory' | 'other'",
+      "like_count": "integer",
+      "save_count": "integer",
+      "is_liked": "boolean — bu kullanıcı beğenmiş mi",
+      "is_saved": "boolean — bu kullanıcı kaydetmiş mi"
+    },
+    "ProductDetail": {
+      "id": "integer",
+      "name": "string",
+      "brand": "Brand",
+      "price": "string (decimal)",
+      "image_url": "string (URL)",
+      "product_url": "string (URL) — orijinal mağaza sayfası",
+      "category": "string",
+      "like_count": "integer",
+      "save_count": "integer",
+      "is_liked": "boolean",
+      "is_saved": "boolean"
+    },
+    "Brand": {
+      "id": "integer",
+      "name": "string",
+      "logo_url": "string (URL)",
+      "website_url": "string (URL)"
+    },
+    "TryOn": {
+      "id": "integer",
+      "product_id": "integer",
+      "product_name": "string",
+      "product_image_url": "string (URL)",
+      "user_photo_url": "string (URL) — Cloudinary'e yüklenen kullanıcı fotoğrafı",
+      "result_image_url": "string (URL) — işlem tamamlanınca dolar, öncesinde boş string",
+      "status": "string — 'pending' | 'processing' | 'completed' | 'failed'",
+      "error_message": "string — sadece status='failed' olunca dolu",
+      "created_at": "string (ISO 8601)"
+    },
+    "Notification": {
+      "id": "integer",
+      "notification_type": "string — 'tryon_completed' | 'tryon_failed' | 'subscription_started' | 'subscription_renewed' | 'subscription_expiring' | 'subscription_expired' | 'credits_low' | 'new_brand' | 'broadcast'",
+      "title": "string",
+      "body": "string",
+      "data": "object — tip bazlı ekstra veri (aşağıya bak)",
+      "is_read": "boolean",
+      "created_at": "string (ISO 8601)"
+    },
+    "NotificationData": {
+      "tryon_completed": {
+        "tryon_id": "string — sonucu göstermek için kullan",
+        "screen": "'tryon_result' — push gelince bu ekrana yönlendir"
+      },
+      "tryon_failed": {
+        "tryon_id": "string",
+        "screen": "'tryon_result'"
+      },
+      "new_brand": {
+        "brand_id": "string",
+        "brand_name": "string"
+      },
+      "credits_low": {
+        "balance": "string — kalan kredi adedi"
+      },
+      "other": {}
+    },
+    "Subscription": {
+      "id": "integer",
+      "plan_name": "string",
+      "plan_slug": "string",
+      "platform": "string — 'google_play' | 'app_store'",
+      "period": "string — 'monthly' | 'yearly'",
+      "status": "string — 'active' | 'expired' | 'cancelled'",
+      "started_at": "string (ISO 8601)",
+      "expires_at": "string (ISO 8601) | null",
+      "auto_renewing": "boolean"
+    },
+    "CreditTransaction": {
+      "id": "integer",
+      "transaction_type": "string — 'purchase' | 'spend' | 'refund'",
+      "amount": "integer — pozitif: ekleme, negatif: harcama",
+      "balance_after": "integer — işlem sonrası bakiye",
+      "note": "string | null",
+      "created_at": "string (ISO 8601)"
+    }
+  },
+  "pushNotificationSetup": {
+    "description": "FCM/APNs cihaz token'ını kaydet — push bildirimlerin çalışması için zorunlu",
+    "when": "Kullanıcı login olduktan hemen sonra, her uygulama açılışında çağır",
+    "register": {
+      "method": "POST",
+      "path": "/api/v1/notifications/device-token/",
+      "body": {
+        "token": "string — Firebase SDK'dan alınan FCM token (iOS için APNs token)",
+        "platform": "'ios' | 'android'"
+      }
+    },
+    "unregister": {
+      "description": "Çıkış yaparken token'ı devre dışı bırak",
+      "method": "DELETE",
+      "path": "/api/v1/notifications/device-token/",
+      "body": {
+        "token": "string — kaldırılacak token"
+      }
+    },
+    "pushPayload": {
+      "description": "Push bildirim geldiğinde data alanında screen ve ilgili id bulunur",
+      "example": {
+        "title": "Denemen Hazır!",
+        "body": "Beyaz Gömlek üzerindeki görünümün hazır, hemen bak!",
+        "data": {
+          "screen": "tryon_result",
+          "tryon_id": "5"
+        }
+      },
+      "routing": "data.screen === 'tryon_result' → TryOnResultScreen'e yönlendir, data.tryon_id ile sonucu çek"
+    }
+  },
+  "onboardingFlow": {
+    "description": "Kayıt sonrası persona kurulumu — feed ve try-on kalitesi için zorunlu",
+    "trigger": "Login/kayıt sonrası user.is_onboarded === false ise onboarding ekranına yönlendir",
+    "steps": [
+      "1. Login → googleLogin veya appleLogin'den dönen user.is_onboarded kontrol et",
+      "2. false ise: Onboarding ekranını göster (ana ekrana geçme)",
+      "3. Onboarding ekranında kullanıcıdan şunları al:",
+      "   - Cinsiyet (zorunlu): 'Erkek' → 'male', 'Kadın' → 'female', 'Belirtmek istemiyorum' → 'unisex'",
+      "   - Boy (opsiyonel): cm cinsinden integer",
+      "   - Kilo (opsiyonel): kg cinsinden integer",
+      "4. PATCH /api/v1/auth/me/measurements/ → { gender, height_cm, weight_kg } gönder",
+      "5. Response'daki user.is_onboarded === true olunca ana ekrana geç",
+      "6. Artık feed ve ürünler otomatik cinsiyete göre filtrelenmiş gelir"
+    ],
+    "notes": [
+      "Onboarding atlanamaz — gender olmadan feed herkese açık tüm ürünleri gösterir",
+      "Kullanıcı sonradan profil ayarlarından gender/ölçülerini değiştirebilir (aynı endpoint)",
+      "Göğüs/bel/kalça opsiyoneldir, onboarding'de göstermek zorunda değilsin"
+    ]
+  },
+  "tryOnFlow": {
+    "description": "Try-on için önerilen frontend akışı",
+    "steps": [
+      "1. POST /api/v1/tryon/create/ → multipart ile product_id + user_photo gönder",
+      "2. Response 200 gelirse: result_image_url zaten hazır, direkt göster",
+      "3. Response 202 gelirse: data.id'yi al, her 10 saniyede GET /api/v1/tryon/{id}/status/ çağır",
+      "4. status === 'completed' → result_image_url'i göster",
+      "5. status === 'failed' → error_message'i kullanıcıya göster, tekrar deneme butonu sun"
+    ],
+    "averageDuration": "60-120 saniye (Fal AI işlem süresi)"
+  }
+}

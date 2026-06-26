@@ -20,18 +20,19 @@ mixin _$UserModel {
   String? get name;
   @JsonKey(name: 'photo_url')
   String? get avatar;
+  String? get gender;
+  @JsonKey(name: 'is_onboarded')
+  bool get isOnboarded;
   @JsonKey(name: 'height_cm')
-  double? get heightCm;
+  int? get heightCm;
   @JsonKey(name: 'weight_kg')
-  double? get weightKg;
+  int? get weightKg;
   @JsonKey(name: 'chest_cm')
-  double? get chestCm;
+  int? get chestCm;
   @JsonKey(name: 'waist_cm')
-  double? get waistCm;
+  int? get waistCm;
   @JsonKey(name: 'hips_cm')
-  double? get hipsCm;
-  @JsonKey(name: 'clothing_size')
-  String? get clothingSize;
+  int? get hipsCm;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -52,25 +53,26 @@ mixin _$UserModel {
             (identical(other.email, email) || other.email == email) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.avatar, avatar) || other.avatar == avatar) &&
+            (identical(other.gender, gender) || other.gender == gender) &&
+            (identical(other.isOnboarded, isOnboarded) ||
+                other.isOnboarded == isOnboarded) &&
             (identical(other.heightCm, heightCm) ||
                 other.heightCm == heightCm) &&
             (identical(other.weightKg, weightKg) ||
                 other.weightKg == weightKg) &&
             (identical(other.chestCm, chestCm) || other.chestCm == chestCm) &&
             (identical(other.waistCm, waistCm) || other.waistCm == waistCm) &&
-            (identical(other.hipsCm, hipsCm) || other.hipsCm == hipsCm) &&
-            (identical(other.clothingSize, clothingSize) ||
-                other.clothingSize == clothingSize));
+            (identical(other.hipsCm, hipsCm) || other.hipsCm == hipsCm));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, email, name, avatar,
-      heightCm, weightKg, chestCm, waistCm, hipsCm, clothingSize);
+  int get hashCode => Object.hash(runtimeType, id, email, name, avatar, gender,
+      isOnboarded, heightCm, weightKg, chestCm, waistCm, hipsCm);
 
   @override
   String toString() {
-    return 'UserModel(id: $id, email: $email, name: $name, avatar: $avatar, heightCm: $heightCm, weightKg: $weightKg, chestCm: $chestCm, waistCm: $waistCm, hipsCm: $hipsCm, clothingSize: $clothingSize)';
+    return 'UserModel(id: $id, email: $email, name: $name, avatar: $avatar, gender: $gender, isOnboarded: $isOnboarded, heightCm: $heightCm, weightKg: $weightKg, chestCm: $chestCm, waistCm: $waistCm, hipsCm: $hipsCm)';
   }
 }
 
@@ -84,12 +86,13 @@ abstract mixin class $UserModelCopyWith<$Res> {
       String email,
       @JsonKey(name: 'display_name') String? name,
       @JsonKey(name: 'photo_url') String? avatar,
-      @JsonKey(name: 'height_cm') double? heightCm,
-      @JsonKey(name: 'weight_kg') double? weightKg,
-      @JsonKey(name: 'chest_cm') double? chestCm,
-      @JsonKey(name: 'waist_cm') double? waistCm,
-      @JsonKey(name: 'hips_cm') double? hipsCm,
-      @JsonKey(name: 'clothing_size') String? clothingSize});
+      String? gender,
+      @JsonKey(name: 'is_onboarded') bool isOnboarded,
+      @JsonKey(name: 'height_cm') int? heightCm,
+      @JsonKey(name: 'weight_kg') int? weightKg,
+      @JsonKey(name: 'chest_cm') int? chestCm,
+      @JsonKey(name: 'waist_cm') int? waistCm,
+      @JsonKey(name: 'hips_cm') int? hipsCm});
 }
 
 /// @nodoc
@@ -108,12 +111,13 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
     Object? email = null,
     Object? name = freezed,
     Object? avatar = freezed,
+    Object? gender = freezed,
+    Object? isOnboarded = null,
     Object? heightCm = freezed,
     Object? weightKg = freezed,
     Object? chestCm = freezed,
     Object? waistCm = freezed,
     Object? hipsCm = freezed,
-    Object? clothingSize = freezed,
   }) {
     return _then(_self.copyWith(
       id: null == id
@@ -132,30 +136,34 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
           ? _self.avatar
           : avatar // ignore: cast_nullable_to_non_nullable
               as String?,
+      gender: freezed == gender
+          ? _self.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isOnboarded: null == isOnboarded
+          ? _self.isOnboarded
+          : isOnboarded // ignore: cast_nullable_to_non_nullable
+              as bool,
       heightCm: freezed == heightCm
           ? _self.heightCm
           : heightCm // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       weightKg: freezed == weightKg
           ? _self.weightKg
           : weightKg // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       chestCm: freezed == chestCm
           ? _self.chestCm
           : chestCm // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       waistCm: freezed == waistCm
           ? _self.waistCm
           : waistCm // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       hipsCm: freezed == hipsCm
           ? _self.hipsCm
           : hipsCm // ignore: cast_nullable_to_non_nullable
-              as double?,
-      clothingSize: freezed == clothingSize
-          ? _self.clothingSize
-          : clothingSize // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as int?,
     ));
   }
 }
@@ -256,12 +264,13 @@ extension UserModelPatterns on UserModel {
             String email,
             @JsonKey(name: 'display_name') String? name,
             @JsonKey(name: 'photo_url') String? avatar,
-            @JsonKey(name: 'height_cm') double? heightCm,
-            @JsonKey(name: 'weight_kg') double? weightKg,
-            @JsonKey(name: 'chest_cm') double? chestCm,
-            @JsonKey(name: 'waist_cm') double? waistCm,
-            @JsonKey(name: 'hips_cm') double? hipsCm,
-            @JsonKey(name: 'clothing_size') String? clothingSize)?
+            String? gender,
+            @JsonKey(name: 'is_onboarded') bool isOnboarded,
+            @JsonKey(name: 'height_cm') int? heightCm,
+            @JsonKey(name: 'weight_kg') int? weightKg,
+            @JsonKey(name: 'chest_cm') int? chestCm,
+            @JsonKey(name: 'waist_cm') int? waistCm,
+            @JsonKey(name: 'hips_cm') int? hipsCm)?
         $default, {
     required TResult orElse(),
   }) {
@@ -273,12 +282,13 @@ extension UserModelPatterns on UserModel {
             _that.email,
             _that.name,
             _that.avatar,
+            _that.gender,
+            _that.isOnboarded,
             _that.heightCm,
             _that.weightKg,
             _that.chestCm,
             _that.waistCm,
-            _that.hipsCm,
-            _that.clothingSize);
+            _that.hipsCm);
       case _:
         return orElse();
     }
@@ -304,12 +314,13 @@ extension UserModelPatterns on UserModel {
             String email,
             @JsonKey(name: 'display_name') String? name,
             @JsonKey(name: 'photo_url') String? avatar,
-            @JsonKey(name: 'height_cm') double? heightCm,
-            @JsonKey(name: 'weight_kg') double? weightKg,
-            @JsonKey(name: 'chest_cm') double? chestCm,
-            @JsonKey(name: 'waist_cm') double? waistCm,
-            @JsonKey(name: 'hips_cm') double? hipsCm,
-            @JsonKey(name: 'clothing_size') String? clothingSize)
+            String? gender,
+            @JsonKey(name: 'is_onboarded') bool isOnboarded,
+            @JsonKey(name: 'height_cm') int? heightCm,
+            @JsonKey(name: 'weight_kg') int? weightKg,
+            @JsonKey(name: 'chest_cm') int? chestCm,
+            @JsonKey(name: 'waist_cm') int? waistCm,
+            @JsonKey(name: 'hips_cm') int? hipsCm)
         $default,
   ) {
     final _that = this;
@@ -320,12 +331,13 @@ extension UserModelPatterns on UserModel {
             _that.email,
             _that.name,
             _that.avatar,
+            _that.gender,
+            _that.isOnboarded,
             _that.heightCm,
             _that.weightKg,
             _that.chestCm,
             _that.waistCm,
-            _that.hipsCm,
-            _that.clothingSize);
+            _that.hipsCm);
     }
   }
 
@@ -348,12 +360,13 @@ extension UserModelPatterns on UserModel {
             String email,
             @JsonKey(name: 'display_name') String? name,
             @JsonKey(name: 'photo_url') String? avatar,
-            @JsonKey(name: 'height_cm') double? heightCm,
-            @JsonKey(name: 'weight_kg') double? weightKg,
-            @JsonKey(name: 'chest_cm') double? chestCm,
-            @JsonKey(name: 'waist_cm') double? waistCm,
-            @JsonKey(name: 'hips_cm') double? hipsCm,
-            @JsonKey(name: 'clothing_size') String? clothingSize)?
+            String? gender,
+            @JsonKey(name: 'is_onboarded') bool isOnboarded,
+            @JsonKey(name: 'height_cm') int? heightCm,
+            @JsonKey(name: 'weight_kg') int? weightKg,
+            @JsonKey(name: 'chest_cm') int? chestCm,
+            @JsonKey(name: 'waist_cm') int? waistCm,
+            @JsonKey(name: 'hips_cm') int? hipsCm)?
         $default,
   ) {
     final _that = this;
@@ -364,12 +377,13 @@ extension UserModelPatterns on UserModel {
             _that.email,
             _that.name,
             _that.avatar,
+            _that.gender,
+            _that.isOnboarded,
             _that.heightCm,
             _that.weightKg,
             _that.chestCm,
             _that.waistCm,
-            _that.hipsCm,
-            _that.clothingSize);
+            _that.hipsCm);
       case _:
         return null;
     }
@@ -384,12 +398,13 @@ class _UserModel implements UserModel {
       required this.email,
       @JsonKey(name: 'display_name') this.name,
       @JsonKey(name: 'photo_url') this.avatar,
+      this.gender,
+      @JsonKey(name: 'is_onboarded') this.isOnboarded = false,
       @JsonKey(name: 'height_cm') this.heightCm,
       @JsonKey(name: 'weight_kg') this.weightKg,
       @JsonKey(name: 'chest_cm') this.chestCm,
       @JsonKey(name: 'waist_cm') this.waistCm,
-      @JsonKey(name: 'hips_cm') this.hipsCm,
-      @JsonKey(name: 'clothing_size') this.clothingSize});
+      @JsonKey(name: 'hips_cm') this.hipsCm});
   factory _UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
 
@@ -404,23 +419,25 @@ class _UserModel implements UserModel {
   @JsonKey(name: 'photo_url')
   final String? avatar;
   @override
+  final String? gender;
+  @override
+  @JsonKey(name: 'is_onboarded')
+  final bool isOnboarded;
+  @override
   @JsonKey(name: 'height_cm')
-  final double? heightCm;
+  final int? heightCm;
   @override
   @JsonKey(name: 'weight_kg')
-  final double? weightKg;
+  final int? weightKg;
   @override
   @JsonKey(name: 'chest_cm')
-  final double? chestCm;
+  final int? chestCm;
   @override
   @JsonKey(name: 'waist_cm')
-  final double? waistCm;
+  final int? waistCm;
   @override
   @JsonKey(name: 'hips_cm')
-  final double? hipsCm;
-  @override
-  @JsonKey(name: 'clothing_size')
-  final String? clothingSize;
+  final int? hipsCm;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -446,25 +463,26 @@ class _UserModel implements UserModel {
             (identical(other.email, email) || other.email == email) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.avatar, avatar) || other.avatar == avatar) &&
+            (identical(other.gender, gender) || other.gender == gender) &&
+            (identical(other.isOnboarded, isOnboarded) ||
+                other.isOnboarded == isOnboarded) &&
             (identical(other.heightCm, heightCm) ||
                 other.heightCm == heightCm) &&
             (identical(other.weightKg, weightKg) ||
                 other.weightKg == weightKg) &&
             (identical(other.chestCm, chestCm) || other.chestCm == chestCm) &&
             (identical(other.waistCm, waistCm) || other.waistCm == waistCm) &&
-            (identical(other.hipsCm, hipsCm) || other.hipsCm == hipsCm) &&
-            (identical(other.clothingSize, clothingSize) ||
-                other.clothingSize == clothingSize));
+            (identical(other.hipsCm, hipsCm) || other.hipsCm == hipsCm));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, email, name, avatar,
-      heightCm, weightKg, chestCm, waistCm, hipsCm, clothingSize);
+  int get hashCode => Object.hash(runtimeType, id, email, name, avatar, gender,
+      isOnboarded, heightCm, weightKg, chestCm, waistCm, hipsCm);
 
   @override
   String toString() {
-    return 'UserModel(id: $id, email: $email, name: $name, avatar: $avatar, heightCm: $heightCm, weightKg: $weightKg, chestCm: $chestCm, waistCm: $waistCm, hipsCm: $hipsCm, clothingSize: $clothingSize)';
+    return 'UserModel(id: $id, email: $email, name: $name, avatar: $avatar, gender: $gender, isOnboarded: $isOnboarded, heightCm: $heightCm, weightKg: $weightKg, chestCm: $chestCm, waistCm: $waistCm, hipsCm: $hipsCm)';
   }
 }
 
@@ -481,12 +499,13 @@ abstract mixin class _$UserModelCopyWith<$Res>
       String email,
       @JsonKey(name: 'display_name') String? name,
       @JsonKey(name: 'photo_url') String? avatar,
-      @JsonKey(name: 'height_cm') double? heightCm,
-      @JsonKey(name: 'weight_kg') double? weightKg,
-      @JsonKey(name: 'chest_cm') double? chestCm,
-      @JsonKey(name: 'waist_cm') double? waistCm,
-      @JsonKey(name: 'hips_cm') double? hipsCm,
-      @JsonKey(name: 'clothing_size') String? clothingSize});
+      String? gender,
+      @JsonKey(name: 'is_onboarded') bool isOnboarded,
+      @JsonKey(name: 'height_cm') int? heightCm,
+      @JsonKey(name: 'weight_kg') int? weightKg,
+      @JsonKey(name: 'chest_cm') int? chestCm,
+      @JsonKey(name: 'waist_cm') int? waistCm,
+      @JsonKey(name: 'hips_cm') int? hipsCm});
 }
 
 /// @nodoc
@@ -505,12 +524,13 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
     Object? email = null,
     Object? name = freezed,
     Object? avatar = freezed,
+    Object? gender = freezed,
+    Object? isOnboarded = null,
     Object? heightCm = freezed,
     Object? weightKg = freezed,
     Object? chestCm = freezed,
     Object? waistCm = freezed,
     Object? hipsCm = freezed,
-    Object? clothingSize = freezed,
   }) {
     return _then(_UserModel(
       id: null == id
@@ -529,30 +549,34 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
           ? _self.avatar
           : avatar // ignore: cast_nullable_to_non_nullable
               as String?,
+      gender: freezed == gender
+          ? _self.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isOnboarded: null == isOnboarded
+          ? _self.isOnboarded
+          : isOnboarded // ignore: cast_nullable_to_non_nullable
+              as bool,
       heightCm: freezed == heightCm
           ? _self.heightCm
           : heightCm // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       weightKg: freezed == weightKg
           ? _self.weightKg
           : weightKg // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       chestCm: freezed == chestCm
           ? _self.chestCm
           : chestCm // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       waistCm: freezed == waistCm
           ? _self.waistCm
           : waistCm // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as int?,
       hipsCm: freezed == hipsCm
           ? _self.hipsCm
           : hipsCm // ignore: cast_nullable_to_non_nullable
-              as double?,
-      clothingSize: freezed == clothingSize
-          ? _self.clothingSize
-          : clothingSize // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as int?,
     ));
   }
 }

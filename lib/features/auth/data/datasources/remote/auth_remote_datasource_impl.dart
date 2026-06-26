@@ -52,17 +52,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final idToken = auth.idToken;
       if (idToken == null) throw const AuthException('Google ID token is null');
 
-      // ignore: avoid_print
-      print('TOKEN_START');
-      // ignore: avoid_print
-      print(idToken.substring(0, 200));
-      // ignore: avoid_print
-      print(idToken.substring(200, 400));
-      // ignore: avoid_print
-      print(idToken.substring(400));
-      // ignore: avoid_print
-      print('TOKEN_END');
-
       final response = await _client.dio.post(
         ApiEndpoints.googleAuth,
         data: {'token': idToken},
@@ -89,11 +78,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         ],
       );
 
+      final displayName = [credential.givenName, credential.familyName]
+          .where((e) => e != null && e.isNotEmpty)
+          .join(' ');
+
       final response = await _client.dio.post(
         ApiEndpoints.appleAuth,
         data: {
-          'identity_token': credential.identityToken,
-          'authorization_code': credential.authorizationCode,
+          'token': credential.identityToken,
+          if (displayName.isNotEmpty) 'display_name': displayName,
         },
       );
       await _saveTokens(response.data['data']);
@@ -142,22 +135,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<UserModel> updateMeasurements({
-    double? heightCm,
-    double? weightKg,
-    double? chestCm,
-    double? waistCm,
-    double? hipsCm,
-    String? clothingSize,
+    String? gender,
+    int? heightCm,
+    int? weightKg,
+    int? chestCm,
+    int? waistCm,
+    int? hipsCm,
   }) async {
     final response = await _client.dio.patch(
       ApiEndpoints.measurements,
       data: {
+        if (gender != null) 'gender': gender,
         if (heightCm != null) 'height_cm': heightCm,
         if (weightKg != null) 'weight_kg': weightKg,
         if (chestCm != null) 'chest_cm': chestCm,
         if (waistCm != null) 'waist_cm': waistCm,
         if (hipsCm != null) 'hips_cm': hipsCm,
-        if (clothingSize != null) 'clothing_size': clothingSize,
       },
     );
     return UserModel.fromJson(response.data['data']);

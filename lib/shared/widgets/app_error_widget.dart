@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:ai_try_on/shared/theme/theme.dart';
+import 'package:ai_try_on/core/extensions/l10n_extension.dart';
 
 class AppErrorWidget extends StatelessWidget {
   final String message;
@@ -35,7 +36,7 @@ class AppErrorWidget extends StatelessWidget {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: onRetry,
-                child: const Text('Retry'),
+                child: Text(context.l10n.retry),
               ),
             ],
           ],

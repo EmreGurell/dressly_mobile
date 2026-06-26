@@ -30,13 +30,24 @@ class BrandsRepositoryImpl implements BrandsRepository {
   }
 
   @override
+  Future<Either<Failure, List<Product>>> getProducts(int page, {String? search}) async {
+    try {
+      final models = await _remote.getProducts(page, search: search);
+      return Right(models.map((m) => m.toEntity()).toList());
+    } catch (e) {
+      return Left(_mapError(e).toFailure());
+    }
+  }
+
+  @override
   Future<Either<Failure, List<Product>>> getBrandProducts(
     int brandId,
     int page, {
     String? category,
+    String? search,
   }) async {
     try {
-      final models = await _remote.getBrandProducts(brandId, page, category: category);
+      final models = await _remote.getBrandProducts(brandId, page, category: category, search: search);
       return Right(models.map((m) => m.toEntity()).toList());
     } catch (e) {
       return Left(_mapError(e).toFailure());

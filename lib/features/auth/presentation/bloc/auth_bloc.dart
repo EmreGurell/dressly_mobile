@@ -11,6 +11,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LogoutUseCase _logoutUseCase;
   final GetMeUseCase _getMeUseCase;
   final UpdateMeasurementsUseCase _updateMeasurementsUseCase;
+  final ForgotPasswordUseCase _forgotPasswordUseCase;
 
   AuthBloc({
     required LoginUseCase loginUseCase,
@@ -20,6 +21,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required LogoutUseCase logoutUseCase,
     required GetMeUseCase getMeUseCase,
     required UpdateMeasurementsUseCase updateMeasurementsUseCase,
+    required ForgotPasswordUseCase forgotPasswordUseCase,
   })  : _loginUseCase = loginUseCase,
         _registerUseCase = registerUseCase,
         _loginWithGoogleUseCase = loginWithGoogleUseCase,
@@ -27,6 +29,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _logoutUseCase = logoutUseCase,
         _getMeUseCase = getMeUseCase,
         _updateMeasurementsUseCase = updateMeasurementsUseCase,
+        _forgotPasswordUseCase = forgotPasswordUseCase,
         super(const AuthState.initial()) {
     on<AuthEvent>((event, emit) async {
       await event.when(
@@ -37,8 +40,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         loginWithAppleRequested: () => _onLoginWithApple(emit),
         logoutRequested: () => _onLogout(emit),
         getMeRequested: () => _onGetMe(emit),
-        updateMeasurementsRequested: (heightCm, weightKg, chestCm, waistCm, hipsCm, clothingSize) =>
-            _onUpdateMeasurements(heightCm, weightKg, chestCm, waistCm, hipsCm, clothingSize, emit),
+        forgotPasswordRequested: (email) => _onForgotPassword(email, emit),
+        updateMeasurementsRequested: (gender, heightCm, weightKg, chestCm, waistCm, hipsCm) =>
+            _onUpdateMeasurements(gender, heightCm, weightKg, chestCm, waistCm, hipsCm, emit),
       );
     });
   }
@@ -101,6 +105,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
+  Future<void> _onForgotPassword(
+    String email,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthState.loading());
+    final result = await _forgotPasswordUseCase(email);
+    result.fold(
+      (failure) => emit(AuthState.error(failure.message)),
+      (_) => emit(const AuthState.forgotPasswordSent()),
+    );
+  }
+
   Future<void> _onGetMe(Emitter<AuthState> emit) async {
     final result = await _getMeUseCase();
     result.fold(
@@ -110,22 +126,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onUpdateMeasurements(
-    double? heightCm,
-    double? weightKg,
-    double? chestCm,
-    double? waistCm,
-    double? hipsCm,
-    String? clothingSize,
+    String? gender,
+    int? heightCm,
+    int? weightKg,
+    int? chestCm,
+    int? waistCm,
+    int? hipsCm,
     Emitter<AuthState> emit,
   ) async {
     final currentUser = state.whenOrNull(authenticated: (u) => u);
     final result = await _updateMeasurementsUseCase(
+      gender: gender,
       heightCm: heightCm,
       weightKg: weightKg,
       chestCm: chestCm,
       waistCm: waistCm,
       hipsCm: hipsCm,
-      clothingSize: clothingSize,
     );
     result.fold(
       (_) {

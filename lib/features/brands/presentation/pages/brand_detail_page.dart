@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:ai_try_on/shared/theme/theme.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -8,7 +8,6 @@ import 'package:ai_try_on/features/brands/domain/entities/brands.dart';
 import 'package:ai_try_on/features/brands/presentation/bloc/brand_detail_bloc.dart';
 import 'package:ai_try_on/features/brands/presentation/bloc/brand_detail_event.dart';
 import 'package:ai_try_on/features/brands/presentation/bloc/brand_detail_state.dart';
-import 'package:ai_try_on/features/feed/domain/entities/product.dart';
 import 'package:ai_try_on/shared/theme/app_colors.dart';
 import 'package:ai_try_on/shared/theme/app_padding.dart';
 import 'package:ai_try_on/shared/theme/app_radius.dart';
@@ -16,6 +15,7 @@ import 'package:ai_try_on/shared/theme/app_sizes.dart';
 import 'package:ai_try_on/shared/widgets/app_empty_widget.dart';
 import 'package:ai_try_on/shared/widgets/app_error_widget.dart';
 import 'package:ai_try_on/shared/widgets/app_loading_widget.dart';
+import 'package:ai_try_on/shared/widgets/catalog_product_card.dart';
 
 class BrandDetailPage extends StatelessWidget {
   final Brand brand;
@@ -24,8 +24,7 @@ class BrandDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<BrandDetailBloc>()
-        ..add(BrandDetailEvent.load(brand)),
+      create: (_) => sl<BrandDetailBloc>()..add(BrandDetailEvent.load(brand)),
       child: _BrandDetailView(brand: brand),
     );
   }
@@ -41,16 +40,21 @@ class _BrandDetailView extends StatefulWidget {
 
 class _BrandDetailViewState extends State<_BrandDetailView> {
   final _scrollController = ScrollController();
+  final _searchController = TextEditingController();
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    _searchController.addListener(() { if (mounted) setState(() {}); });
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -59,6 +63,13 @@ class _BrandDetailViewState extends State<_BrandDetailView> {
         _scrollController.position.maxScrollExtent - 200) {
       context.read<BrandDetailBloc>().add(const BrandDetailEvent.loadMore());
     }
+  }
+
+  void _onSearch(String query) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      context.read<BrandDetailBloc>().add(BrandDetailEvent.search(query));
+    });
   }
 
   @override
@@ -74,232 +85,224 @@ class _BrandDetailViewState extends State<_BrandDetailView> {
                 .read<BrandDetailBloc>()
                 .add(BrandDetailEvent.load(widget.brand)),
           ),
-          loaded: (brand, products, categories, selectedCategory, _, hasMore, isLoadingMore) =>
-              CustomScrollView(
-                controller: _scrollController,
-                slivers: [
-                  _BrandAppBar(brand: brand),
-                  if (categories.isNotEmpty)
-                    SliverToBoxAdapter(
-                      child: _CategoryFilters(
-                        categories: categories,
-                        selected: selectedCategory,
-                      ),
+          loaded: (brand, products, categories, selectedCategory, _, hasMore,
+                  isLoadingMore) {
+            final q = _searchController.text.toLowerCase();
+            final displayProducts = q.isEmpty
+                ? products
+                : products.where((p) => p.name.toLowerCase().contains(q)).toList();
+            return CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              SliverAppBar(
+                pinned: true,
+                floating: true,
+                snap: true,
+                title: Text(
+                  brand.name,
+                  style: context.appTextTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(56),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                    child: _SearchBar(
+                      controller: _searchController,
+                      onChanged: _onSearch,
                     ),
-                  products.isEmpty
-                      ? const SliverFillRemaining(child: AppEmptyWidget())
-                      : _ProductGrid(products: products),
-                  if (isLoadingMore)
-                    const SliverToBoxAdapter(
-                      child: Padding(
-                        padding: AppPadding.p16,
-                        child: Center(child: CircularProgressIndicator()),
-                      ),
-                    ),
-                ],
+                  ),
+                ),
               ),
+              if (categories.isNotEmpty)
+                SliverPersistentHeader(
+                  pinned: false,
+                  delegate: _CategoryHeaderDelegate(
+                    categories: categories,
+                    selected: selectedCategory,
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    onSelected: (cat) => context
+                        .read<BrandDetailBloc>()
+                        .add(BrandDetailEvent.selectCategory(cat)),
+                  ),
+                ),
+              if (displayProducts.isEmpty && isLoadingMore)
+                const SliverFillRemaining(child: AppLoadingWidget())
+              else if (displayProducts.isEmpty)
+                const SliverFillRemaining(child: AppEmptyWidget())
+              else
+                SliverPadding(
+                  padding: AppPadding.p16,
+                  sliver: SliverGrid(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: AppSizes.space12,
+                      mainAxisSpacing: AppSizes.space12,
+                      mainAxisExtent: 320,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) =>
+                          CatalogProductCard(product: displayProducts[index]),
+                      childCount: displayProducts.length,
+                    ),
+                  ),
+                ),
+              if (isLoadingMore)
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: AppPadding.p16,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+              const SliverToBoxAdapter(
+                  child: SizedBox(height: AppSizes.space16)),
+            ],
+          );
+          },
         ),
       ),
     );
   }
 }
 
-class _BrandAppBar extends StatelessWidget {
-  final Brand brand;
-  const _BrandAppBar({required this.brand});
+class _SearchBar extends StatelessWidget {
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+  const _SearchBar({required this.controller, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
-    return SliverAppBar(
-      expandedHeight: 200,
-      pinned: true,
-      flexibleSpace: FlexibleSpaceBar(
-        title: Text(
-          brand.name,
-          style: const TextStyle(
-            color: AppColors.white,
-            fontWeight: FontWeight.bold,
-          ),
+    final cs = Theme.of(context).colorScheme;
+    return TextField(
+      controller: controller,
+      onChanged: onChanged,
+      textInputAction: TextInputAction.search,
+      style: TextStyle(color: cs.onSurface),
+      decoration: InputDecoration(
+        hintText: 'Ürün ara...',
+        hintStyle: context.appTextTheme.bodyMedium
+            ?.copyWith(color: cs.onSurfaceVariant),
+        prefixIcon: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: PhosphorIcon(PhosphorIcons.magnifyingGlass(),
+              size: 20, color: cs.onSurfaceVariant),
         ),
-        background: brand.logoUrl.isNotEmpty
-            ? CachedNetworkImage(
-                imageUrl: brand.logoUrl,
-                fit: BoxFit.cover,
-                placeholder: (_, __) =>
-                    Container(color: AppColors.primaryContainer),
-                errorWidget: (_, __, ___) =>
-                    Container(color: AppColors.primaryContainer),
-              )
-            : Container(color: AppColors.primaryContainer),
+        prefixIconConstraints: const BoxConstraints(minWidth: 0),
+        suffixIcon: ValueListenableBuilder(
+          valueListenable: controller,
+          builder: (_, value, __) => value.text.isEmpty
+              ? const SizedBox.shrink()
+              : IconButton(
+                  icon: PhosphorIcon(PhosphorIcons.x(),
+                      size: 18, color: cs.onSurfaceVariant),
+                  onPressed: () {
+                    controller.clear();
+                    onChanged('');
+                  },
+                ),
+        ),
+        filled: true,
+        fillColor: cs.surfaceContainerHighest,
+        contentPadding: const EdgeInsets.symmetric(vertical: 10),
+        border: OutlineInputBorder(
+          borderRadius: AppRadius.circular12,
+          borderSide: BorderSide(color: cs.outlineVariant),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: AppRadius.circular12,
+          borderSide: BorderSide(color: cs.outlineVariant),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: AppRadius.circular12,
+          borderSide: BorderSide(color: cs.onSurface, width: 1.5),
+        ),
       ),
     );
   }
 }
 
-class _CategoryFilters extends StatelessWidget {
+class _CategoryHeaderDelegate extends SliverPersistentHeaderDelegate {
   final List<String> categories;
   final String? selected;
+  final Color backgroundColor;
+  final ValueChanged<String?> onSelected;
 
-  const _CategoryFilters({required this.categories, required this.selected});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 48,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: AppPadding.horizontal16,
-        children: [
-          _FilterChip(
-            label: 'All',
-            isSelected: selected == null,
-            onTap: () => context
-                .read<BrandDetailBloc>()
-                .add(const BrandDetailEvent.selectCategory(null)),
-          ),
-          ...categories.map(
-            (cat) => _FilterChip(
-              label: cat,
-              isSelected: selected == cat,
-              onTap: () => context
-                  .read<BrandDetailBloc>()
-                  .add(BrandDetailEvent.selectCategory(cat)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _FilterChip extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _FilterChip({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
+  const _CategoryHeaderDelegate({
+    required this.categories,
+    required this.selected,
+    required this.backgroundColor,
+    required this.onSelected,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: AppSizes.space8),
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.space16,
-            vertical: AppSizes.space8,
-          ),
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.primary : AppColors.grey100,
-            borderRadius: AppRadius.circular100,
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? AppColors.white : AppColors.grey700,
-              fontWeight: FontWeight.w500,
-              fontSize: 13,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ProductGrid extends StatelessWidget {
-  final List<Product> products;
-  const _ProductGrid({required this.products});
+  double get minExtent => 52;
+  @override
+  double get maxExtent => 52;
 
   @override
-  Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: AppPadding.p16,
-      sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: AppSizes.space12,
-          mainAxisSpacing: AppSizes.space12,
-          childAspectRatio: 0.72,
-        ),
-        delegate: SliverChildBuilderDelegate(
-          (context, index) => _ProductCard(product: products[index]),
-          childCount: products.length,
-        ),
-      ),
-    );
-  }
-}
-
-class _ProductCard extends StatelessWidget {
-  final Product product;
-  const _ProductCard({required this.product});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: AppRadius.circular12,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withOpacity(0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+      color: backgroundColor,
+      padding: const EdgeInsets.symmetric(vertical: AppSizes.space8),
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: AppPadding.horizontal16,
+        itemCount: categories.length + 1,
+        separatorBuilder: (_, __) => const SizedBox(width: AppSizes.space8),
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return _Chip(
+                label: 'Tümü',
+                isSelected: selected == null,
+                onTap: () => onSelected(null));
+          }
+          final cat = categories[index - 1];
+          return _Chip(
+              label: cat,
+              isSelected: selected == cat,
+              onTap: () => onSelected(cat));
+        },
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: AppRadius.top12,
-              child: CachedNetworkImage(
-                imageUrl: product.imageUrl,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                placeholder: (_, __) =>
-                    Container(color: AppColors.grey100),
-                errorWidget: (_, __, ___) => Container(
-                  color: AppColors.grey100,
-                  child: PhosphorIcon(PhosphorIcons.imageBroken(),
-                      color: AppColors.grey400),
-                ),
-              ),
-            ),
+    );
+  }
+
+  @override
+  bool shouldRebuild(_CategoryHeaderDelegate old) => true;
+}
+
+class _Chip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+  const _Chip(
+      {required this.label, required this.isSelected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSizes.space16, vertical: AppSizes.space8),
+        decoration: BoxDecoration(
+          color: isSelected ? cs.onSurface : AppColors.transparent,
+          borderRadius: AppRadius.circular100,
+          border:
+              Border.all(color: isSelected ? cs.onSurface : cs.outlineVariant),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? cs.surface : cs.onSurfaceVariant,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+            fontSize: 13,
           ),
-          Padding(
-            padding: AppPadding.p8,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  product.name,
-                  style: context.appTextTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: AppSizes.space4),
-                Text(
-                  '\$${product.price.toStringAsFixed(2)}',
-                  style: context.appTextTheme.bodySmall?.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

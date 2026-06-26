@@ -44,7 +44,7 @@ class BlackTextField extends StatelessWidget {
         suffixIconConstraints: const BoxConstraints(),
         enabledBorder: OutlineInputBorder(
           borderRadius: AppRadius.circular12,
-          borderSide: BorderSide(color: cs.outline),
+          borderSide: BorderSide(color: cs.outlineVariant),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppRadius.circular12,

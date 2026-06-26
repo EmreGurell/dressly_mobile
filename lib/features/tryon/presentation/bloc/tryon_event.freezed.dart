@@ -52,6 +52,7 @@ extension TryonEventPatterns on TryonEvent {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_PhotoSelected value)? photoSelected,
     TResult Function(_TryOnRequested value)? tryOnRequested,
+    TResult Function(_PollStatus value)? pollStatus,
     TResult Function(_SaveResult value)? saveResult,
     TResult Function(_Reset value)? reset,
     required TResult orElse(),
@@ -62,6 +63,8 @@ extension TryonEventPatterns on TryonEvent {
         return photoSelected(_that);
       case _TryOnRequested() when tryOnRequested != null:
         return tryOnRequested(_that);
+      case _PollStatus() when pollStatus != null:
+        return pollStatus(_that);
       case _SaveResult() when saveResult != null:
         return saveResult(_that);
       case _Reset() when reset != null:
@@ -88,6 +91,7 @@ extension TryonEventPatterns on TryonEvent {
   TResult map<TResult extends Object?>({
     required TResult Function(_PhotoSelected value) photoSelected,
     required TResult Function(_TryOnRequested value) tryOnRequested,
+    required TResult Function(_PollStatus value) pollStatus,
     required TResult Function(_SaveResult value) saveResult,
     required TResult Function(_Reset value) reset,
   }) {
@@ -97,6 +101,8 @@ extension TryonEventPatterns on TryonEvent {
         return photoSelected(_that);
       case _TryOnRequested():
         return tryOnRequested(_that);
+      case _PollStatus():
+        return pollStatus(_that);
       case _SaveResult():
         return saveResult(_that);
       case _Reset():
@@ -120,6 +126,7 @@ extension TryonEventPatterns on TryonEvent {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_PhotoSelected value)? photoSelected,
     TResult? Function(_TryOnRequested value)? tryOnRequested,
+    TResult? Function(_PollStatus value)? pollStatus,
     TResult? Function(_SaveResult value)? saveResult,
     TResult? Function(_Reset value)? reset,
   }) {
@@ -129,6 +136,8 @@ extension TryonEventPatterns on TryonEvent {
         return photoSelected(_that);
       case _TryOnRequested() when tryOnRequested != null:
         return tryOnRequested(_that);
+      case _PollStatus() when pollStatus != null:
+        return pollStatus(_that);
       case _SaveResult() when saveResult != null:
         return saveResult(_that);
       case _Reset() when reset != null:
@@ -154,7 +163,8 @@ extension TryonEventPatterns on TryonEvent {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(XFile photo)? photoSelected,
     TResult Function(int productId)? tryOnRequested,
-    TResult Function(String imageUrl)? saveResult,
+    TResult Function(int tryonId)? pollStatus,
+    TResult Function()? saveResult,
     TResult Function()? reset,
     required TResult orElse(),
   }) {
@@ -164,8 +174,10 @@ extension TryonEventPatterns on TryonEvent {
         return photoSelected(_that.photo);
       case _TryOnRequested() when tryOnRequested != null:
         return tryOnRequested(_that.productId);
+      case _PollStatus() when pollStatus != null:
+        return pollStatus(_that.tryonId);
       case _SaveResult() when saveResult != null:
-        return saveResult(_that.imageUrl);
+        return saveResult();
       case _Reset() when reset != null:
         return reset();
       case _:
@@ -190,7 +202,8 @@ extension TryonEventPatterns on TryonEvent {
   TResult when<TResult extends Object?>({
     required TResult Function(XFile photo) photoSelected,
     required TResult Function(int productId) tryOnRequested,
-    required TResult Function(String imageUrl) saveResult,
+    required TResult Function(int tryonId) pollStatus,
+    required TResult Function() saveResult,
     required TResult Function() reset,
   }) {
     final _that = this;
@@ -199,8 +212,10 @@ extension TryonEventPatterns on TryonEvent {
         return photoSelected(_that.photo);
       case _TryOnRequested():
         return tryOnRequested(_that.productId);
+      case _PollStatus():
+        return pollStatus(_that.tryonId);
       case _SaveResult():
-        return saveResult(_that.imageUrl);
+        return saveResult();
       case _Reset():
         return reset();
     }
@@ -222,7 +237,8 @@ extension TryonEventPatterns on TryonEvent {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(XFile photo)? photoSelected,
     TResult? Function(int productId)? tryOnRequested,
-    TResult? Function(String imageUrl)? saveResult,
+    TResult? Function(int tryonId)? pollStatus,
+    TResult? Function()? saveResult,
     TResult? Function()? reset,
   }) {
     final _that = this;
@@ -231,8 +247,10 @@ extension TryonEventPatterns on TryonEvent {
         return photoSelected(_that.photo);
       case _TryOnRequested() when tryOnRequested != null:
         return tryOnRequested(_that.productId);
+      case _PollStatus() when pollStatus != null:
+        return pollStatus(_that.tryonId);
       case _SaveResult() when saveResult != null:
-        return saveResult(_that.imageUrl);
+        return saveResult();
       case _Reset() when reset != null:
         return reset();
       case _:
@@ -372,65 +390,84 @@ class __$TryOnRequestedCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _SaveResult implements TryonEvent {
-  const _SaveResult(this.imageUrl);
+class _PollStatus implements TryonEvent {
+  const _PollStatus(this.tryonId);
 
-  final String imageUrl;
+  final int tryonId;
 
   /// Create a copy of TryonEvent
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  _$SaveResultCopyWith<_SaveResult> get copyWith =>
-      __$SaveResultCopyWithImpl<_SaveResult>(this, _$identity);
+  _$PollStatusCopyWith<_PollStatus> get copyWith =>
+      __$PollStatusCopyWithImpl<_PollStatus>(this, _$identity);
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _SaveResult &&
-            (identical(other.imageUrl, imageUrl) ||
-                other.imageUrl == imageUrl));
+            other is _PollStatus &&
+            (identical(other.tryonId, tryonId) || other.tryonId == tryonId));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, imageUrl);
+  int get hashCode => Object.hash(runtimeType, tryonId);
 
   @override
   String toString() {
-    return 'TryonEvent.saveResult(imageUrl: $imageUrl)';
+    return 'TryonEvent.pollStatus(tryonId: $tryonId)';
   }
 }
 
 /// @nodoc
-abstract mixin class _$SaveResultCopyWith<$Res>
+abstract mixin class _$PollStatusCopyWith<$Res>
     implements $TryonEventCopyWith<$Res> {
-  factory _$SaveResultCopyWith(
-          _SaveResult value, $Res Function(_SaveResult) _then) =
-      __$SaveResultCopyWithImpl;
+  factory _$PollStatusCopyWith(
+          _PollStatus value, $Res Function(_PollStatus) _then) =
+      __$PollStatusCopyWithImpl;
   @useResult
-  $Res call({String imageUrl});
+  $Res call({int tryonId});
 }
 
 /// @nodoc
-class __$SaveResultCopyWithImpl<$Res> implements _$SaveResultCopyWith<$Res> {
-  __$SaveResultCopyWithImpl(this._self, this._then);
+class __$PollStatusCopyWithImpl<$Res> implements _$PollStatusCopyWith<$Res> {
+  __$PollStatusCopyWithImpl(this._self, this._then);
 
-  final _SaveResult _self;
-  final $Res Function(_SaveResult) _then;
+  final _PollStatus _self;
+  final $Res Function(_PollStatus) _then;
 
   /// Create a copy of TryonEvent
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   $Res call({
-    Object? imageUrl = null,
+    Object? tryonId = null,
   }) {
-    return _then(_SaveResult(
-      null == imageUrl
-          ? _self.imageUrl
-          : imageUrl // ignore: cast_nullable_to_non_nullable
-              as String,
+    return _then(_PollStatus(
+      null == tryonId
+          ? _self.tryonId
+          : tryonId // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
+  }
+}
+
+/// @nodoc
+
+class _SaveResult implements TryonEvent {
+  const _SaveResult();
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _SaveResult);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  String toString() {
+    return 'TryonEvent.saveResult()';
   }
 }
 

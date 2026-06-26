@@ -7,6 +7,7 @@ abstract class FeedRemoteDataSource {
   Future<void> likeProduct(int productId);
   Future<void> saveProduct(int productId);
   Future<void> refreshFeed();
+  Future<List<ProductModel>> getRecommendations();
 }
 
 class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
@@ -36,5 +37,12 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
   @override
   Future<void> refreshFeed() async {
     await _client.dio.post(ApiEndpoints.feedRefresh);
+  }
+
+  @override
+  Future<List<ProductModel>> getRecommendations() async {
+    final response = await _client.dio.get(ApiEndpoints.recommendations);
+    final List results = response.data['results'] ?? [];
+    return results.map((e) => ProductModel.fromJson(e)).toList();
   }
 }
